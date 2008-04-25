@@ -1,0 +1,263 @@
+From culver@funston.cs.unc.edu  Mon Jul 19 22:04:54 1999
+Return-Path: <culver@funston.cs.unc.edu>
+Received: from funston.cs.unc.edu (IDENT:culver@zerbina.cs.unc.edu [152.2.129.157])
+	by cthulhu.itc.Virginia.EDU (8.9.3/8.9.3) with ESMTP id WAA28086
+	for <wfp5p@cthulhu.itc.virginia.edu>; Mon, 19 Jul 1999 22:04:51 -0400
+Received: (from culver@localhost)
+	by funston.cs.unc.edu (8.8.7/8.8.7) id WAA31116;
+	Mon, 19 Jul 1999 22:05:38 -0400
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="JYvC/mwXJN"
+Content-Transfer-Encoding: 7bit
+Message-ID: <14227.55665.652341.537265@funston.cs.unc.edu>
+Date: Mon, 19 Jul 1999 22:05:37 -0400 (EDT)
+From: Tim Culver <culver@cs.unc.edu>
+To: Bill Pemberton <wfp5p@cthulhu.itc.virginia.edu>
+Subject: Re: xbuffy/imap
+In-Reply-To: <199907192059.QAA16596@cthulhu.itc.Virginia.EDU>
+References: <14227.36416.521867.990401@funston.cs.unc.edu>
+	<199907192059.QAA16596@cthulhu.itc.Virginia.EDU>
+X-Mailer: VM 6.69 under 20.4 "Emerald" XEmacs  Lucid
+X-Attribution: tdc
+Status: ORr
+
+
+--JYvC/mwXJN
+Content-Type: text/plain; charset=us-ascii
+Content-Description: message body text
+Content-Transfer-Encoding: 7bit
+
+>>>>> "bp" == Bill Pemberton <wfp5p@cthulhu.itc.virginia.edu> writes:
+
+>> 
+>> 3. I've only provided for imapboxes in boxfiles.  I haven't added the
+>> analogous command-line options and X resources yet.  (I'd like to see
+>> if you want to change anything first.)
+>> 
+
+bp> Yeah, I'll have to change this a little.  I've got some stuff I've
+bp> been playing with that lets you specify different boxes with something
+bp> like: mmdfbox, mdirbox, and mhbox.
+
+bp> As I understand the c-client stuff, we probably want to make it so
+bp> that the user tells xbuffy which driver (or whatever c-client calls
+bp> them) to use and what params to feed the driver.
+
+Actually, c-client generally prefers to decide for itself which driver
+to use.  For file-per-box formats, it tests the formats it knows in a
+certain, documented order.  I'll attach that bit of doc at the end of
+this message in case you're curious.  There is probably no need for
+you to implement mmdfbox, mhbox, etc., in the cases where c-client
+understands them.  You can specify them like this:
+
+  box Mail/flatfile
+    imapbox
+
+referring to the file ~/Mail/flatfile, which can be in unix, mmdf,
+tenex, or several other formats.
+
+  box #mh/banana
+    imapbox
+
+should give you the MH box ~/Mail/banana, assuming ~/Mail is your mh
+dir according to ~/.mh_profile.  I haven't tried these witht the
+current implementation, but they should work either as-is or with a
+bit of twiddling.
+
+You can also specify absolute pathnames (there's no "black box"
+restriction in this case).
+
+bp> This is a busy week for me, so I may not to be able to look at it much
+bp> until next week.  Thanks a lot for your work.  
+
+No problem.  It has been a pleasant diversion while my wife studies
+for the bar exam.  :-)
+
+Tim
+
+
+--JYvC/mwXJN
+Content-Type: text/plain
+Content-Disposition: inline;
+	filename="drivers.txt"
+Content-Transfer-Encoding: 7bit
+
+		   c-client Driver Characteristics
+			     Mark Crispin
+			     5 June 1999
+
+
+     Drivers are code modules that support different mailbox storage
+technologies.  A mailbox storage technology may be implemented by
+ 1) files and directories on the local system
+ 2) a database
+ 3) a network protocol.
+
+     In the case of files and directories on the local system, a
+driver supports a particular mailbox format.  Mailbox formats are
+discussed in more detail in the file formats.txt.
+
+     As of the date this document was written, there was no bundled
+support for any databases in c-client.  However, it should not be
+particularly difficult to write a driver that communicates with a
+database.
+
+     Network protocols supported by c-client drivers are the Internet
+Mail Access Protocol (all versions: IMAP4rev1, IMAP4, IMAP2bis, and
+IMAP2); the Post Office Protocol (version 3); and the Network News
+Transport Protocol (NNTP).  In addition, c-client also supports NNTP
+and the Simple Mail Transport Protocol (SMTP) for mailbox transport.
+
+     By default, all drivers are enabled.  There is little benefit to
+be gained by disabling a driver, with one exception.  The mbox driver
+implements the behavior of automatically moving new mail from the
+spool directory to the "mbox" file on the user's home directory, if
+and *only* if the "mbox" exists and is in mailbox format.  The mbox
+driver is listed under EXTRADRIVERS; if you wish to disable it just
+remove it from that list and rebuild.
+
+I. Special name "INBOX"
+
+The following rules to select INBOX and its format apply in
+the order given if "black box mode" is not in effect:
+ 1) mbox format is selected if file ~/mbox exists, and is in unix
+    format or is zero-length.
+ 2) mx format is selected if file ~/INBOX/.mxindex exists.
+ 3) mbx format is selected if file ~/INBOX exists and is in mbx format.
+ 4) tenex format is selected if:
+    a) file ~/mail.txt exists, and is in tenex format or is zero-length.
+    b) file ~/INBOX exists and is in tenex format.
+ 5) mtx format is selected if:
+    a) file ~/INBOX.MTX exists, and is in mtx format or is zero-length.
+    b) file ~/INBOX exists and is in mtx format.
+ 6) mmdf format is selected if the spool directory file exists and is
+    in mmdf format.
+ 7) unix format is selected if the spool directory file exists and is
+    in in unix format.   
+ 8) the dummy driver is selected if the spool directory file does not
+    exist, or exists and is empty.
+
+If "black box mode" is not in effect, messages are automatically
+transferred ("snarfed") from the spool directory to an INBOX in mbox,
+mx, mbx, tenex, and mtx formats.
+
+The following rules to select INBOX and its format apply in the order
+given if "black box mode" is in effect:
+ 1) mx format is selected if file ~/INBOX/.mxindex exists.
+ 2) mbx format is selected if file ~/INBOX exists and is in mbx format.
+ 3) tenex format is selected if file ~/INBOX exists and is in tenex format.
+ 4) mtx format is selected if file ~/INBOX exists and is in mtx format.
+ 5) mmdf format is selected if file ~/INBOX exists and is in mmdf format.
+ 6) unix format is selected if file ~/INBOX exists and is in unix format.
+ 7) the dummy driver is selected if ~/INBOX does not exist, or exists
+    and is empty.
+
+II. Special Name #mhinbox
+
+#mhinbox always refers to the directory "inbox" in the MH path, which
+is declared in the ~/.mh_profile file.  Messages are automatically
+transferred from the spool directory to #mhinbox mailbox.
+
+
+III. Special Prefix "#mh/"
+
+Any name prefixed with "#mh/" always refers to a directory in the MH
+path, which is declared in the ~/.mh_profile file.  For example, the name
+"#mh/foo" refers to directory "foo" in the MH path.
+
+
+IV. Special prefix "#news."
+
+Any name prefixed with "#news" always refers to a newsgroup.  For
+example, the name "#news.comp.mail.misc" refers to newsgroup
+"comp.mail.misc".
+
+
+V. All Other Names
+
+The driver is selected by generating a file name from the mailbox
+name, and then examining the data of the object with the resulting
+name.  The formats are checked in order: mx, mbx, tenex, mtx, mmdf,
+unix, and phile.  The dummy driver is selected if the file is empty.
+
+The file name is generated according to certain rules, based upon the
+prefix of the mailbox name.  On UNIX, the following rules apply:
+
+Prefix		Interpretation of Suffix
+------		------------------------
+/		[black box] preceeds a user name; "/foo/bar" means
+		 "black box user foo's mailbox bar"
+		[not black box] preceeds an absolute path name.
+~		[not black box] preceeds a user name; "~foo/bar" means
+		 "UNIX user foo's mailbox bar"
+#ftp/		preceeds UNIX user ftp's mailbox name
+#public/	preceeds UNIX user imappublic's mailbox name
+#shared/	preceeds UNIX user imapshared's mailbox name
+
+All other names are interpreted in the context of the UNIX user's home
+directory (not black box), the black box user's black box directory
+(black box), or UNIX user ftp's home directory (anonymous).
+
+The strings "..", "//", and /~ are forbidden in names in:
+ black box mode
+ #ftp, #public, or #shared names
+ anonymous users
+
+Anonymous users may only access:
+ INBOX (belonging to UNIX user ftp)
+ files in or below UNIX user ftp's home directory
+ #ftp, #news, and #public namespace
+
+VI. Driver Comparison
+
+The following information about the local file drivers is an
+elaboration of a table compiled by Osma Ahvenlampi.
+
+Driver	CA	CE	UID	Kwd	Sub	NFS	Performance	Layout
+------	--	--	---	---	---	---	-----------	------
+unix	no	no	yes	yes	no	limited	fair		file
+ ;;; traditional UNIX format
+mbox	no	no	yes	yes	no	limited	fair		file
+ ;;; traditional UNIX format, INBOX only, using ~/mbox with automatic
+ ;;; moving from the mail spool directory.
+mmdf	no	no	yes	yes	no	limited	fair		file
+ ;;; default on SCO systems
+mbx	yes	yes	yes	yes	no	no	very good	prefile
+ ;;; best performing local file driver; preferred format at UW
+tenex	yes	no	no	limited	no	no	good		prefile
+ ;;; compatible with UNIX MM
+mtx	yes	no	no	limited	no	no	very good	prefile
+ ;;; PC Pine standard format; compatible with TOPS-20; identical to tenex
+ ;;; but instead CRLF newlines instead of LF
+mx	yes	buggy	yes	yes	yes	no	poor		ixdir
+ ;;; fullest function; *not* recommended due to performance problems and bugs;
+ ;;; to be redesigned/rewritten
+mh	yes	no	no	no	yes	yes	very poor	dir
+ ;;; compatible with mh; #mhinbox for INBOX, #mh/ prefix for all other names
+news	yes	no	yes	no	yes	yes	very poor	ixdir
+ ;;; local news spool access; #news. prefix for all names
+phile	no	no	no	no	no	yes	good		file
+ ;;; reads arbitrary file as a single readonly message
+
+IMPORTANT: the "performance" ratings are relative to other drivers,
+and not necessarily to other software which implements those formats.
+They relate to the driver's performance in typical operations such as
+an IMAP "FETCH ALL".
+
+Key to headings:
+	CA:	concurrent read/write access
+	CE:	expunge permitted in concurrent read/write access
+	UID:	sticky UIDs
+	Kwd:	keyword flags
+	Sub:	subfolders
+	NFS:	usable over network filesystems (NFS, AFS, etc.)
+	Layout:	file - single file
+		prefile - file with preallocated space for state
+		dir - directory, messages are files
+		ixdir - directory, messages are files, with helper index
+
+In addition, drivers imap, nntp, and pop3 support IMAP4rev1, NNTP, and
+POP3 protocols respectively.
+
+--JYvC/mwXJN--
+

@@ -1,0 +1,4 @@
+#undef HAVE_CCLIENT
+#undef PRODUCT
+#undef  USE_CONTENT_LENGTH
+#undef USE_NNTP

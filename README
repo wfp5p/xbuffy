@@ -1,0 +1,44 @@
+
+What is XBuffy?
+===============
+
+Xbuffy was written by Bill Pemberton (wfp5p@virginia.edu) and was based on 
+Xmultibiff by John Reardon.  Xmultibiff can be found at ftp.midnight.com.
+
+I was looking for a replacement for XBiff.  I use procmail to separate
+my mail into several different mailboxes.  I looked at a lot of
+replacements for XBiff until I found Xmultibiff.  Xmultibiff was very
+promising, but it didn't do quite what I wanted it to do, so I
+modified it to create XBuffy.
+
+Basically, XBuffy (and Xmultibiff) is a XBiff-type program with a lot
+of new options.  With XBuffy you can watch multiple mailboxes.  When
+new mail arrives, you can have a pop up window showing the From: and
+Subject: lines.  You can also set it up to launch your favorite mail
+reader when you click on a box.  By default, xbuffy is only capable of
+watching mailboxes with the standard Berkeley mailbox format (messages
+separated with a From line).  If you have the c-client library
+available, xbuffy can be compiled to use that library.  This will give
+you access to a lot more mail formats including IMAP, mh, maildir, and
+MMDF.
+
+This version also incorporates a feature which will let you monitor
+newsgroups in the same way you monitor mailboxes.  It parses your
+.newsrc and uses NNTP to monitor any given group or groups.  It will
+keep constant track of how many unread articles are in a specified
+newsgroup(s).  Also, when new articles come in, it will pop up the From
+and Subject lines of the article just like it pops them up for
+mailboxes.  Note that this feature won't be able to see new incoming
+articles if you are using a version of NNTP prior to 1.5.11t5 (the
+problem is with the NNTP server, not Xbuffy).
+
+Xbuffy uses the Athena Widget library and the libDyn package (libDyn
+is included here).
+
+To build:
+
+	configure
+	make
+
+See the file INSTALL for more detailed instructions.
+

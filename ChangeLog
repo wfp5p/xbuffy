@@ -1,0 +1,93 @@
+Changes from Xbuffy 3.4 to Xbuffy 3.5
+-------------------------------------------------------
+Added parsing of MIME encoded headers (thanks to Allan Beaufour 
+Larsen <allan@beaufour.dk>)
+
+
+Changes from Xbuffy 3.3 to Xbuffy 3.4
+-------------------------------------------------------
+Changed the apps-default file a little.
+
+Added a error message if the mailbox could not be opened.
+
+Allowed polltime to be zero.  This means no polling for the box.
+
+Added support for using C-Client to check mailboxes (thanks to Tim Culver for
+providing the original code).  This allows Xbuffy to know about a lot more 
+mailbox formats including MMDF, IMAP, MH, MAILDIR, and others.
+
+Changed to using a configure script instead of an Imakefile
+
+
+
+Changes from Xbuffy 3.2 to Xbuffy 3.3
+-------------------------------------------------------
+Fixed a bug with the boxfile code (thanks to kalt@ensta.fr (Christophe Kalt)).
+
+
+
+
+Changes from Xbuffy 3.1 to Xbuffy 3.2
+-------------------------------------------------------
+
+Button 3 will now reset the box colors.
+
+The box name (if you are using boxfiles) can now contain environment variables.  
+This is currently only done for the box parameter.  To use an environment 
+variable, put it in {} (for example: box /usr/spool/{USER}
+
+Now trys to look for lock files.  Right now it only knows about .lock .
+
+Added the ability to use Content-Length: headers.
+
+Options to center and/or make all boxes the same size (this the the -center and
+-fill options).
+
+
+Changes from Xbuffy 3.0 to Xbuffy 3.1
+-------------------------------------------------------
+
+Fixed a few minor bugs (such as a portion of the mailbox title getting
+hacked off).
+
+Made some changes so it will compile on Solaris.  I know of 1 person that
+got it to run successfully using gcc.
+
+
+Changes from Xbuffy 2.2 to Xbuffy 3.0
+-------------------------------------------------------
+
+Changes to get xbuffy into the X11R6 contrib.
+
+Got rid of the elm patch (for the R6 contrib, the patch
+can be gotten by anonymous ftp to ftp.virginia.edu:/pub/elm.diffs.gz).
+
+
+
+Changes from Xbuffy 2.1 to Xbuffy 2.2
+-------------------------------------------------------
+
+Changed when initNNTP gets called so that xbuffy will start
+displaying something sooner.
+
+Added patchlevel.h to make moderators happy.
+
+Added a local strdup for systems that don't have strdup (like
+Ultrix).  (thanks to John Stoffel <john@wpi.edu>
+
+Added the ability for user control of the nice level.
+	(thanks to Juan D. Martin <juando@cnm.us.es>)
+
+Whitespace on the end of box names now gets removed.	
+
+Changed the elm patch a little bit.
+
+Changes from Xbuffy 2.0 to Xbuffy 2.1
+-------------------------------------------------------
+
+Added define for linux		 		
+Added htons call in nntp.c
+	(from smpatel@xi.dorm.umd.edu)
+Fixed the -news parameter	
+	
+

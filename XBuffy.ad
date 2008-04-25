@@ -1,0 +1,10 @@
+!
+! Application Defaults file for XBuffy, this is just meant as an example
+!
+XBuffy*nobeep:	FALSE
+XBuffy*horiz:		FALSE
+XBuffy*names:		FALSE
+XBuffy*shortnames:	TRUE
+XBuffy*polltime:	30
+XBuffy*priority:	15
+XBuffy*headertime:	10

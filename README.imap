@@ -1,0 +1,86 @@
+Using xbuffy on imap mailboxes
+------------------------------
+
+Tim Culver <culver@doppke.com> 7/19/1999
+
+
+You specify an imap mailbox using the standard c-client notation, and
+you write "imapbox" instead of "mailbox".  For instance,
+
+box {imap.cs.unc.edu/user=culver}
+   title INBOX
+   cclient
+   polltime 180
+
+box {imap.doppke.com/user=tim}lists/c-client
+   title c-client
+   cclient
+   polltime 180
+
+Xbuffy will ask you for your password for each mailbox before opening
+up its window.  This means you can't easily start up xbuffy inside
+your .Xstartup or whatever.  After it has authenticated you to all of
+your servers, it will go into the background on its own as usual.
+
+Xbuffy stashes your password in memory, so after you type it once, it
+can re-authenticate you to the server.  But there are some cases where 
+this may not work.  In these cases, xbuffy will ask again for your
+password.  If it's running in the background, there's no easy way to
+type in your password, so xbuffy will hang.  So you might want to try
+the new -nofork option for running in the foreground.
+
+Xbuffy's default mode for imap mailboxes is to use the c-client
+library's mail_status() call, which opens a connection to the server,
+asks about the number of new messages (or total number of messages in
+origMode), and closes.  This is a heavy-duty operation, and it
+shouldn't be run very frequently.  Please don't set your polltime any
+lower than 3 minutes in this default mode.  (If you do set your
+polltime below 180 in this mode, you will see a message from Mark
+Crispin, one of the main authors of the IMAP protocol [see rfc2060]).
+
+Xbuffy's alternate mode is called "keepopen".  In this mode, a
+connection to the server is made and kept open for the duration of
+xbuffy's execution.  At every polltime, xbuffy sends a mail_ping
+(typically resulting in a NOOP request to the server) to discover
+updates to the mailbox.  The server may not give xbuffy enough
+information to determine exactly the number of unseen messages, but
+xbuffy tries to guess.  Whenever xbuffy shows you the headers (as a
+pop-up or in response to a click), it has to perform a search on the
+server, so it is able to update to the correct number of unseen
+messages.  So if you have a headertime set, then the number will
+always be correct.
+
+If you *don't* have a headertime set, the possibility exists that the
+approximation will get increasingly bad.  If you're worried about
+this, you can set the additional option "countperiod 20", where
+the "20" means that on every 20th polltime, count the actual number of 
+unseen messages and fix the approximation.  If you set
+"countperiod 1", you will always see the correct number, but you
+will be performing an imap search operation every polltime.
+
+For very frequent updates, keepopen mode is less of a strain on the
+server than the default mode.  But remember that a typical imap server 
+runs a separate process for each connection, and each process can take 
+many megabytes of server memory.  Further, xbuffy currently opens a
+separate server connection for each mailbox!  (This should be fixed in 
+the future.)
+
+The recommended thing to do is to use the default mode with a polltime 
+of 5-10 minutes, and to ask your server's administrator what she would 
+consider overuse of the server's resources.
+
+Limitations
+-----------
+
+Presumably you are using not only Xbuffy, but also some other imap
+client to actually read your mail.  This means you have two clients
+which can be competing for access to your mailbox.  Depending on your
+server and its configuration, this may mean that xbuffy simply won't
+be able to work the way you want it to.  For instance, if the UW imap
+server is using unix-format mailboxes, it may not give xbuffy updates
+any more after your real client reads the mail.  This particular case
+can be avoided by using a better format for your mailboxes, but be
+aware that these issues can stop xbuffy from doing its job.  (Such
+problems are more likely to occur in keepopen mode.)
+
+See README.cclient for other things the c-client support provides.
