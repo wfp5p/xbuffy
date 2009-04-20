@@ -1,8 +1,8 @@
 Summary:  X-based multiple mailbox biff
 Name: xbuffy
 Version: 3.5
-Release: 0
-Copyright: X Consortium, copyrighted by author
+Release: 1
+License: X Consortium
 Group: X11/Utilities
 Source: ftp.virginia.edu:/pub/src/xbuffy/xbuffy-3.5.tar.gz
 Buildroot: %{_tmppath}/%{name}-root
@@ -19,13 +19,13 @@ when you click on the mailbox.
 %configure
 make
 %install
-install -D -s -m 755 -o 0 -g 0 xbuffy $RPM_BUILD_ROOT/usr/X11R6/bin/xbuffy
-install -D -m 644 -o 0 -g 0 xbuffy.1 $RPM_BUILD_ROOT/usr/X11R6/man/man1/xbuffy.1x
-install -D -m 644 -o 0 -g 0 XBuffy.ad $RPM_BUILD_ROOT/usr/X11R6/lib/X11/app-defaults/XBuffy
+install -D -s -m 755 xbuffy $RPM_BUILD_ROOT/usr/bin/xbuffy
+install -D -m 644 xbuffy.1 $RPM_BUILD_ROOT/usr/share/man/man1/xbuffy.1x
+install -D -m 644 XBuffy.ad $RPM_BUILD_ROOT/usr/share/X11/app-defaults/XBuffy
 %files
 %doc ChangeLog README README.imap README.cclient boxfile.fmt boxfile.sample
 
-/usr/X11R6/bin/xbuffy
-/usr/X11R6/man/man1/xbuffy.1x.gz
-/usr/X11R6/lib/X11/app-defaults/XBuffy
+/usr/bin/xbuffy
+/usr/share/man/man1/xbuffy.1x.gz
+/usr/share/X11/app-defaults/XBuffy
 
