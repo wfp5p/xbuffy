@@ -1,7 +1,7 @@
 Summary:  X-based multiple mailbox biff
 Name: xbuffy
 Version: 3.5
-Release: 1
+Release: 2
 License: X Consortium
 Group: X11/Utilities
 Source: ftp.virginia.edu:/pub/src/xbuffy/xbuffy-3.5.tar.gz
