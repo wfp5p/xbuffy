@@ -826,13 +826,7 @@ void initBox(box, BoxType, pollTime, headerTime, BoxNameType, command, audioCmd,
     int boxSize;
     char *ptr;
 
-/* get rid of trailing whitespace in box */
-
-    ptr = box + NEWstrlen(box) - 1;
-
-    while (isspace(*ptr))
-        *ptr-- = '\0';
-
+    HX_strrtrim(box);
 
 #ifdef DEBUG
     fprintf(stderr, "Init Box = *%s*\n", box);
