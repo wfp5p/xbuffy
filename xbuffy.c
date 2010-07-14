@@ -77,7 +77,10 @@ void TimerBreakPopup();
 int CountUnixMail();
 void ParseMailPath();
 int makeBoxTitle();
-void initBox();
+void initBox(char *box, BoxType_t BoxType, int pollTime, int headerTime,
+	     BoxNameType_t BoxNameType, char *command, char *audioCmd,
+	     char *title, Boolean origMode, Boolean nobeep,
+	     char *bgName, char *fgName, int countperiod, Boolean keepopen);
 Pixel convertColor();
 
 #ifdef HAVE_CCLIENT
@@ -803,23 +806,10 @@ Pixel convertColor(colorname, defValue)
       return(*(Pixel *)pixelout.addr);
 }
 
-void initBox(box, BoxType, pollTime, headerTime, BoxNameType, command, audioCmd,
-                 title, origMode, nobeep, bgName, fgName, countperiod, keepopen)
-    char *box;
-    BoxType_t BoxType;
-    int pollTime;
-    int headerTime;
-    BoxNameType_t BoxNameType;
-    char *command;
-    char *audioCmd;
-    char *title;
-    Boolean origMode;
-    Boolean nobeep;
-    char *bgName;
-    char *fgName;
-    int countperiod;
-    Boolean keepopen;
-
+void initBox(char *box, BoxType_t BoxType, int pollTime, int headerTime,
+	     BoxNameType_t BoxNameType, char *command, char *audioCmd,
+	     char *title, Boolean origMode, Boolean nobeep,
+	     char *bgName, char *fgName, int countperiod, Boolean keepopen)
 {
 
     struct boxinfo tempBox;
@@ -1272,7 +1262,8 @@ int main(argc, argv)
             if (mailArgs)
             {
                 initBox(NEWstrdup(*argv), MAILBOX, envPolltime, envHeadertime,
-                        UNDEF, data.command, data.audioCmd, NULL, data.origMode, data.nobeep,NULL,NULL);
+                        UNDEF, data.command, data.audioCmd, NULL,
+			data.origMode, data.nobeep, NULL, NULL, 0, 0);
 
             }
 
@@ -1281,7 +1272,8 @@ int main(argc, argv)
             {
 
                 initBox(NEWstrdup(*argv), NNTPBOX, envPolltime, envHeadertime,
-                        UNDEF, data.command, data.audioCmd, NULL, data.origMode, data.nobeep,NULL,NULL);
+                        UNDEF, data.command, data.audioCmd, NULL,
+			data.origMode, data.nobeep, NULL, NULL, 0, 0);
 
             }
 #endif                          /* NNTP */
