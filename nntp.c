@@ -189,7 +189,7 @@ static char *getNewsrc()
 }
 
 void readNewsrcEntry(newsBox, firstArt, lastArt)
-	BoxInfo_t *newsBox;
+	struct boxinfo *newsBox;
 	long firstArt;
 	long lastArt;
 {
@@ -289,7 +289,7 @@ int insideBox(x, firstNum, lastNum)
 
 
 int CountNNTP(newsBox, headerString, beenTouched)
-	BoxInfo_t *newsBox;
+	struct boxinfo *newsBox;
 	DynObject headerString;
 	Boolean *beenTouched;
 {
@@ -412,7 +412,7 @@ int CountNNTP(newsBox, headerString, beenTouched)
 #ifdef TESTNEWS
 void main()
 {
-	BoxInfo_t tempBox;
+	struct boxinfo tempBox;
 	Boolean dummy;
 
 	tempBox.articles = DynCreate(sizeof(Articles_t), 2);

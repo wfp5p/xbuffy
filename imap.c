@@ -1,6 +1,6 @@
-/* Copyright (c) 1999   
- * 
- * Thanks to Tim Culver <culver@cs.unc.edu> for doing the work to 
+/* Copyright (c) 1999
+ *
+ * Thanks to Tim Culver <culver@cs.unc.edu> for doing the work to
  * support cclient.  This code is mostly his with a little mangling
  * by me.
  *
@@ -14,7 +14,7 @@
 
 unsigned long ping_updated = 0;
 DynObject message_list;
-BoxInfo_t *CurrentBox;
+struct boxinfo *CurrentBox;
 MAILSTATUS mailstatus;
 
 void AddImapHeaders(stream, msgno, headerString)
@@ -30,7 +30,7 @@ void AddImapHeaders(stream, msgno, headerString)
 
         strcpy(From, "From: ");
 	mail_fetchfrom(&From[6], stream, msgno, MAX_STRING - 6 - 2);
-	
+
         /* trim to actual length */
 	for (k = MAX_STRING - 2; k >= 0; k--)
 		if (From[k] == '\0' || isspace(From[k]) || k == MAX_STRING - 2)
@@ -43,7 +43,7 @@ void AddImapHeaders(stream, msgno, headerString)
 			break;
 		}
 
-	
+
         strcpy(Subject, "Subject: ");
 	mail_fetchsubject(&Subject[9], stream, msgno, MAX_STRING - 9 - 2);
 	/* no need to trim */
@@ -64,7 +64,7 @@ void AddImapHeaders(stream, msgno, headerString)
 /* Subroutine for counting unseen messages or returning their headers. */
 
 int CountIMAPunseen(mailBox, headerString)
-	BoxInfo_t *mailBox;
+	struct boxinfo *mailBox;
 	DynObject headerString;
 {
 	unsigned long j, messages, *msgno_ptr;
@@ -113,7 +113,7 @@ int CountIMAPunseen(mailBox, headerString)
 
 
 int CountIMAP(mailBox, headerString, beenTouched)
-	BoxInfo_t *mailBox;
+	struct boxinfo *mailBox;
 	DynObject headerString;
 	Boolean *beenTouched;
 {

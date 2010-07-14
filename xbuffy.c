@@ -82,7 +82,7 @@ Pixel convertColor();
 
 #ifdef HAVE_CCLIENT
 int CountIMAP();
-extern BoxInfo_t *CurrentBox;
+extern struct boxinfo *CurrentBox;
 #endif
 
 void ButtonDownHandler();
@@ -104,7 +104,7 @@ Widget *header;
 ApplicationData_t data;
 XtAppContext app;
 DynObject DynBoxObj;
-BoxInfo_t *boxInfo;
+struct boxinfo *boxInfo;
 int *headerUp;
 int nBoxes = 0;
 int envPolltime = 0;
@@ -180,8 +180,8 @@ void CheckBox(i)
     int num = 0;
     Arg args[5];
     int nargs;
-    static BoxInfo_t *tempNews = 0;
-    BoxInfo_t *currentBox;
+    static struct boxinfo *tempNews = 0;
+    struct boxinfo *currentBox;
     int found;
     static char *mailHeader = NULL;
     int headerSize;
@@ -192,25 +192,25 @@ void CheckBox(i)
 
    switch (boxInfo[i].type)
    {
-      
-     
+
+
 #ifdef USE_NNTP
     case NNTPBOX:
         num = CountNNTP(currentBox, NULL, &beenTouched);
         break;
 #endif                          /* NNTP */
-      
+
 #ifdef HAVE_CCLIENT
     case CCLIENTBOX:
         num = CountIMAP(currentBox, NULL, &beenTouched);
         break;
-#endif      
+#endif
     case MAILBOX:
         num = CountUnixMail(currentBox, NULL, &beenTouched);
         break;
 
     case NOBOX:break;
-	
+
    }
 
     nargs = 0;
@@ -247,18 +247,18 @@ void CheckBox(i)
 
     if (currentBox->pollTime != 0)
        XtAppAddTimeOut(app,(unsigned long)(currentBox->pollTime * 1000),
-		       (XtTimerCallbackProc) CheckBox, 
+		       (XtTimerCallbackProc) CheckBox,
 		       (XtPointer) i);
 }
 
 
 void setBoxColor(box,status)
-   BoxInfo_t *box;
+   struct boxinfo *box;
    int status;
 {
    Arg args[5];
    int nargs;
-   
+
    nargs = 0;
    if (status)
    {
@@ -274,15 +274,15 @@ void setBoxColor(box,status)
       XtSetArg(args[nargs], XtNforeground, box->fg);
       nargs++;
    }
-   
+
    XtSetValues(box->w, args, nargs);
 }
 
-   
-   
+
+
 
 void UpdateBoxNumber(box)
-    BoxInfo_t *box;
+    struct boxinfo *box;
 {
     char amt[MAX_STRING];
     char fmtString[MAX_STRING];
@@ -306,15 +306,15 @@ void UpdateBoxNumber(box)
     }
 
     memset(fmtString, ' ',MAX_STRING);
-   
+
 
     if (data.center) /* center implies fill */
    {
-      
+
     offset = ((maxBoxSize+4) - NEWstrlen(amt))/2;
       if ( (offset >0) && (offset < MAX_STRING) )
          ptr = fmtString+offset;
-      else 
+      else
       {
 	 ptr = fmtString;
 	 offset = 0;
@@ -326,25 +326,25 @@ void UpdateBoxNumber(box)
    }
    else if (data.fill)
    {
-      
-   
+
+
    offset = maxBoxSize+4-NEWstrlen(amt);
    strcpy(fmtString,amt);
    ptr = fmtString+NEWstrlen(fmtString);
    while (offset-- >0)
       *ptr++ = ' ';
-   
+
    *ptr = '\0';
    }
    else
    {
       strcpy(fmtString, amt);
    }
-   
-   
+
+
     nargs = 0;
 
-    if (!box->origMode)  
+    if (!box->origMode)
     {
         if (box->n > 0)
         {
@@ -353,7 +353,7 @@ void UpdateBoxNumber(box)
         else
         {
 	   setBoxColor(box,0);
-	   
+
         }
     }
 
@@ -432,12 +432,12 @@ void ButtonUpHandler(w, i, event, cont)
     }
     else if (event->xbutton.button == 3)
     {
-       BoxInfo_t *currentBox;
+       struct boxinfo *currentBox;
        currentBox = &boxInfo[*i];
-       
-       setBoxColor(currentBox,0); 
+
+       setBoxColor(currentBox,0);
     }
-      
+
 }
 
 
@@ -460,7 +460,7 @@ void PopupHeader(w, i, event, cont)
     static DynObject mailHeaders;
     static char *hdrPtr;
     Dimension headerW, headerH;
-    BoxInfo_t *currentBox;
+    struct boxinfo *currentBox;
     Boolean beenTouched;
 
 #ifdef MOTIF
@@ -492,17 +492,17 @@ void PopupHeader(w, i, event, cont)
 
      switch (boxInfo[i].type)
      {
-      
+
 #ifdef USE_NNTP
       case NNTPBOX:
 	 number = CountNNTP(&boxInfo[i], mailHeaders, &beenTouched);break;
-#endif 
-      
+#endif
+
 #ifdef HAVE_CCLIENT
     case CCLIENTBOX:
       number = CountIMAP(&boxInfo[i], mailHeaders, &beenTouched);break;
 #endif
-	
+
 
     case MAILBOX:
         number = CountUnixMail(currentBox, mailHeaders, &beenTouched);break;
@@ -637,7 +637,7 @@ void ExecuteCommand(w, i, event, cont)
     XEvent *event;
     Boolean *cont;
 {
-    BoxInfo_t *currentBox;
+    struct boxinfo *currentBox;
 
     currentBox = &boxInfo[i];
 
@@ -652,24 +652,24 @@ void ExecuteCommand(w, i, event, cont)
 int isLocked(mbox)
     char *mbox;
 {
-   
+
 /* right now this is a REAL stupid function, it just looks for a .lock file */
-   
+
    char *lockfile;
    int retVal;
-   
+
    lockfile = (char *) malloc( (NEWstrlen(mbox)+15)*sizeof(char));
-   
+
    strcpy(lockfile, mbox);
    strcat(lockfile, ".lock");
-   
+
    retVal = exists(lockfile);
    free(lockfile);
    return(retVal);
 }
 
 int CountUnixMail(mailBox, headerString, beenTouched)
-    BoxInfo_t *mailBox;
+    struct boxinfo *mailBox;
     DynObject headerString;
     Boolean *beenTouched;
 {
@@ -682,7 +682,7 @@ int CountUnixMail(mailBox, headerString, beenTouched)
     struct stat f_stat;
 
     *beenTouched = FALSE;
-   
+
     if (isLocked(mailBox->box))
        return (mailBox->n);
 
@@ -733,12 +733,12 @@ int CountUnixMail(mailBox, headerString, beenTouched)
         {
             if (header_cmp(buffer, "From", NULL))
             {
-                if (!decode_rfc2047(From, buffer)) 
+                if (!decode_rfc2047(From, buffer))
 		    strcpy(From, buffer);
 
             }
 
-	   
+
 	   if (header_cmp(buffer, "Content-Length", NULL))
 	   {
 	      has_CL = TRUE;
@@ -747,7 +747,7 @@ int CountUnixMail(mailBox, headerString, beenTouched)
 
             if (header_cmp(buffer, "Subject", NULL))
             {
-                if (!decode_rfc2047(Subject, buffer)) 
+                if (!decode_rfc2047(Subject, buffer))
 		    strcpy(Subject, buffer);
             }
 
@@ -764,7 +764,7 @@ int CountUnixMail(mailBox, headerString, beenTouched)
 #ifdef USE_CONTENT_LENGTH
 	       if (has_CL)
 	        fseek(fp,CL,SEEK_CUR);
-#endif	       
+#endif
                 in_header = FALSE;
                 if ((status == NEW_MSG) || (mailBox->origMode))
                 {
@@ -795,19 +795,19 @@ Pixel convertColor(colorname, defValue)
     Pixel defValue;
 {
    XrmValue namein, pixelout;
-   
+
    namein.addr = colorname;
    namein.size = NEWstrlen(colorname) + 1;
    pixelout.size = 0;
-   
+
    XtConvert(toplevel, XtRString, &namein, XtRPixel, &pixelout);
-   
+
    if (pixelout.size == 0) /* it failed */
       return(defValue);
    else
       return(*(Pixel *)pixelout.addr);
 }
-   
+
 void initBox(box, BoxType, pollTime, headerTime, BoxNameType, command, audioCmd,
                  title, origMode, nobeep, bgName, fgName, countperiod, keepopen)
     char *box;
@@ -827,7 +827,7 @@ void initBox(box, BoxType, pollTime, headerTime, BoxNameType, command, audioCmd,
 
 {
 
-    BoxInfo_t tempBox;
+    struct boxinfo tempBox;
     int boxSize;
     char *ptr;
 
@@ -899,46 +899,46 @@ void initBox(box, BoxType, pollTime, headerTime, BoxNameType, command, audioCmd,
     tempBox.audioCmd = NEWstrdup(audioCmd);
     tempBox.origMode = origMode;
     tempBox.nobeep = nobeep;
-    
+
     if (bgName != NULL)
        tempBox.bg = convertColor(bgName,data.bg);
     else
        tempBox.bg = data.bg;
-   
+
     if (fgName != NULL)
        tempBox.fg = convertColor(fgName,data.fg);
     else
        tempBox.fg = data.fg;
-       
+
 
     tempBox.box_mtime = tempBox.st_size = 0;
-   
+
 #ifdef HAVE_CCLIENT
     if (BoxType == CCLIENTBOX)
       {
 	tempBox.stream = NULL;
         tempBox.uname = tempBox.passwd = NULL;
 	tempBox.keepopen = keepopen;
-	
-	 if (tempBox.keepopen) 
+
+	 if (tempBox.keepopen)
 	 {
 	    CurrentBox = &tempBox;
-	  
+
 	    while (!tempBox.stream)
 	       tempBox.stream = mail_open(NIL, tempBox.box, OP_READONLY);
-	  
+
             CurrentBox = NULL;
-	  
-            if (!tempBox.stream) 
+
+            if (!tempBox.stream)
             {
 	      fprintf(stderr,"Can't open IMAP mailbox %s\n",tempBox.box);
 	    }
 	 }
-	 else 
+	 else
 	 {
 	   tempBox.stream = NULL;
 	 }
- 	
+
 	tempBox.num_seen_estimate = 0;
 	tempBox.countperiod = countperiod;
 	tempBox.cycle = countperiod-1;
@@ -947,7 +947,7 @@ void initBox(box, BoxType, pollTime, headerTime, BoxNameType, command, audioCmd,
 
 
     DynAdd(DynBoxObj, &tempBox);
-    boxInfo = (BoxInfo_t *) DynGet(DynBoxObj, 0);
+    boxInfo = (struct boxinfo *) DynGet(DynBoxObj, 0);
 
     nBoxes++;
 }
@@ -1014,7 +1014,7 @@ void ParseNewsPath()
     str = strtok(boxes, ":, ");
     while (str != NULL)
     {
-        BoxInfo_t tempBox;
+        struct boxinfo tempBox;
 
         tempBox.boxNum = nBoxes;
         tempBox.box = NEWstrdup(str);
@@ -1057,7 +1057,7 @@ void LoadIcon(w)
 
 
 int makeBoxTitle(currentBox)
-    BoxInfo_t *currentBox;
+    struct boxinfo *currentBox;
 {
     char line[MAX_STRING];
 
@@ -1134,7 +1134,7 @@ void Usage()
 #endif                          /* NNTP */
 #ifdef HAVE_CCLIENT
     printf("C-Client is enabled.\n");
-#endif   
+#endif
     printf("\n");
     printf("If there are any files specified on the command line, it will\n");
     printf("monitor those mail files, otherwise it will use your MAILPATH\n");
@@ -1192,14 +1192,14 @@ int main(argc, argv)
     mailArgs = TRUE;
 
     nBoxes = 0;
-    DynBoxObj = DynCreate(sizeof(BoxInfo_t), 1);
+    DynBoxObj = DynCreate(sizeof(struct boxinfo), 1);
 
 #ifdef DEBUG
     DynDebug(DynBoxObj, 1);
     DynParanoid(DynBoxObj, 1);
 #endif
 
-    boxInfo = (BoxInfo_t *) DynGet(DynBoxObj, 0);
+    boxInfo = (struct boxinfo *) DynGet(DynBoxObj, 0);
 
     nargs = 0;
     XtSetArg(args[nargs], XtNallowShellResize, TRUE);
@@ -1391,11 +1391,11 @@ int main(argc, argv)
         if (boxInfo[i].type == NNTPBOX)
             boxInfo[i].n = CountNNTP(&boxInfo[i], NULL, &dummy);
 #endif
-       
+
 #ifdef HAVE_CCLIENT
         if (boxInfo[i].type == CCLIENTBOX)
 	    boxInfo[i].n = CountIMAP(&boxInfo[i], NULL, &dummy);
-#endif       
+#endif
 
         sprintf(name, "box%d", i);
 
@@ -1405,7 +1405,7 @@ int main(argc, argv)
         nargs++;
         XtSetArg(args[nargs], XtNright, XtChainLeft);
         nargs++;
-        XtSetArg(args[nargs], XtNresizable, True);   
+        XtSetArg(args[nargs], XtNresizable, True);
         nargs++;
 /*7!*/  XtSetArg(args[nargs], XtNshowGrip, False);
         nargs++;
@@ -1418,12 +1418,12 @@ int main(argc, argv)
 
 
         XtAddEventHandler(boxInfo[i].w, ButtonPressMask, True,
-                          (XtEventHandler) ButtonDownHandler, 
+                          (XtEventHandler) ButtonDownHandler,
 			  &boxInfo[i].boxNum);
-        XtAddEventHandler(boxInfo[i].w, 
-			  ButtonReleaseMask, 
+        XtAddEventHandler(boxInfo[i].w,
+			  ButtonReleaseMask,
 			  True,
-                          (XtEventHandler) ButtonUpHandler, 
+                          (XtEventHandler) ButtonUpHandler,
 			  &boxInfo[i].boxNum);
 
 #else
@@ -1438,7 +1438,7 @@ int main(argc, argv)
                           ButtonUpHandler, &boxInfo[i].boxNum);
 
 #endif
-       
+
         UpdateBoxNumber(&boxInfo[i]);
 
         CheckBox(i);
@@ -1464,9 +1464,9 @@ int main(argc, argv)
     if (setpriority(PRIO_PROCESS, 0, envPriority) == -1)
         perror("Proirity change Failed");
 #endif
-   
+
 if (!data.nofork)
-{     
+{
     /* put ourself in the background */
     switch (pid = fork())
     {
@@ -1482,7 +1482,7 @@ if (!data.nofork)
         break;
     }
 }
-else   
+else
     XtAppMainLoop(app);
 
 }

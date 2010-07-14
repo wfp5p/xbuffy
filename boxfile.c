@@ -29,7 +29,7 @@ extern ApplicationData_t data;
 static char *tokens[23] = {
 	"box", "title", "command", "audio", "mailbox", "newsbox", "origmode",
 	"newmode", "beep", "nobeep", "last", "headertime", "polltime",
-        "shortname", "longname", "background", "foreground", 
+        "shortname", "longname", "background", "foreground",
         "cclient", "countperiod", "keepopen", NULL
 };
 
@@ -81,7 +81,7 @@ TokenType token(line, next)
 
 
 void clearBox(tempBox)
-	BoxInfo_t *tempBox;
+	struct boxinfo *tempBox;
 {
         checkAndFree(tempBox->box);
 	checkAndFree(tempBox->command);
@@ -98,15 +98,15 @@ void clearBox(tempBox)
 	tempBox->headerTime = tempBox->nobeep = tempBox->origMode = 0;
 	tempBox->pollTime = tempBox->headerTime = -1;
 	tempBox->BoxNameType = UNDEF;
-   
+
 
 /* These only apply to cclient stuff, but don't hurt to clear.... */
-   
+
         tempBox->keepopen = 0;
         tempBox->countperiod = 0;
         tempBox->cycle = 0;
         tempBox->num_seen_estimate = 0;
-     
+
 
 }
 
@@ -147,11 +147,11 @@ char *parseEnv(str)
    char *ptr,*res;
    char *envValue,*envPtr;
    char *lbrace;
-   
+
    ptr = str;
    envPtr = envStr;
    res = retVal;
-   
+
    while (*ptr != '\0')
    {
       if (*ptr == '{')
@@ -166,13 +166,13 @@ char *parseEnv(str)
 	 }
 	 if (*ptr == '}')
 	   ptr++;
-	 
+
 	 *envPtr = '\0';
 	 envValue = (char *)getenv(envStr);
-	 
+
  	 /* modified by culver: if getenv() returns 0, then just
 	    copy over the stuff in {...} */
-	 
+
 	 if (envValue) {
 	   strcpy(res,envValue);
 	   res+=NEWstrlen(envValue);
@@ -181,7 +181,7 @@ char *parseEnv(str)
 	   ptr = lbrace+1;
 	 }
 
-	 
+
       }
       else
       {
@@ -190,7 +190,7 @@ char *parseEnv(str)
       }
    }
    *res = '\0';
-   
+
    return(retVal);
 }
 
@@ -208,7 +208,7 @@ char *showNull(w)
 }
 
 void dumpBox(tempBox)
-	BoxInfo_t tempBox;
+	struct boxinfo tempBox;
 {
 	printf("Dumping Box = *%s*\n", tempBox.box);
 	printf("type = %i\n", tempBox.type);
@@ -227,7 +227,7 @@ void dumpBox(tempBox)
 void readBoxfile(boxFile)
 	char *boxFile;
 {
-	BoxInfo_t tempBox;
+	struct boxinfo tempBox;
 	FILE *boxes;
 	char line[MAX_STRING];
 	int inBox;
@@ -235,7 +235,7 @@ void readBoxfile(boxFile)
 
 	tempBox.bgName = tempBox.fgName = tempBox.box = tempBox.command = tempBox.audioCmd = tempBox.boxTitle =tempBox.uname = tempBox.passwd = NULL;
         tempBox.stream = NULL;
-   
+
 	clearBox(&tempBox);
 
 
@@ -303,21 +303,21 @@ void readBoxfile(boxFile)
 		case NEWSBOX_T:
 			tempBox.type = NNTPBOX;
 			break;
-   
+
 	       case CCLIENT_T:
-#ifdef HAVE_CCLIENT		   
+#ifdef HAVE_CCLIENT
 		    tempBox.type = CCLIENTBOX;
 #else
 		   fprintf(stderr, "program not compiled with -DHAVE_CCLIENT, ignoring box\n");
 		   tempBox.type = NOBOX;
-#endif		   
+#endif
   		    break;
-		   
-		   
+
+
 	       case COUNTPERIOD_T:
 		     tempBox.countperiod = atoi(next);
 		     break;
-		   
+
  	       case KEEPOPEN_T:
 		      tempBox.keepopen = TRUE;
 

@@ -1,7 +1,7 @@
 /*******************************************************************************
 
      Copyright (c) 1994,1995    William Pemberton (wfp5p@virginia.edu)
-     
+
      The X Consortium, and any party obtaining a copy of these files from
      the X Consortium, directly or indirectly, is granted, free of charge, a
      full and unrestricted irrevocable, world-wide, paid up, royalty-free,
@@ -41,13 +41,13 @@
 #define UNKNOWN 8
 #define LINEFEED (char) 10
 
-#define X_RESOURCE_CLASS "XBuffy" 
+#define X_RESOURCE_CLASS "XBuffy"
 
 enum BoxType_e {
   MAILBOX = 0,
   NNTPBOX,
   CCLIENTBOX,
-  NOBOX,     
+  NOBOX,
 };
 
 typedef enum BoxType_e BoxType_t;
@@ -61,10 +61,10 @@ struct articles_s
 	long lastNum;
 };
 
-typedef struct articles_s Articles_t;	
+typedef struct articles_s Articles_t;
 
 
-struct BoxInfo_s{
+struct boxinfo {
   Widget w;
   int boxNum;			/* the box number */
   char *box;			/* the box filename or newsgroup */
@@ -75,7 +75,7 @@ struct BoxInfo_s{
   time_t box_mtime;		/* last time read */
   off_t st_size;		/* size of file on last read */
   int n;				/* the number of messages in the box */
-  
+
   char *command;
   char *audioCmd;
   char *boxTitle;
@@ -90,19 +90,17 @@ struct BoxInfo_s{
 
 #ifndef HAVE_CCLIENT
 #define MAILSTREAM void
-#endif   
-   
+#endif
+
    MAILSTREAM *stream;               /* an IMAP connection */
   char *uname, *passwd;              /* cached auth credentials */
   int keepopen;                      /* keep connection open? */
   unsigned int countperiod;          /* how often to correct the estimate */
   unsigned int cycle;
-  unsigned long num_seen_estimate;  /* used to estimate # unseen using only 
+  unsigned long num_seen_estimate;  /* used to estimate # unseen using only
 				       mail_ping() */
-  
-};
-typedef struct BoxInfo_s BoxInfo_t;
 
+};
 
 struct ApplicationData_s
 {
