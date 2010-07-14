@@ -7,8 +7,8 @@ xbuffy_SOURCES = xbuffy.c boxfile.c nntp.c imap.c realfrom.c getword.c len_next.
 EXTRA_DIST = XBuffy.ad boxfile.fmt boxfile.sample xbuffy.xbm xbuffy.1 README.imap README.cclient
 man_MANS = xbuffy.1
 
-SUBDIRS = libdyn
-xbuffy_LDADD = libdyn/libdyn.a @LIBOBJS@  @X_PRE_LIBS@ @X_LIBS@ @X_EXTRA_LIBS@ -lXt -lXmu -lXaw -lXext -lX11 -lHX
+#SUBDIRS = libdyn
+xbuffy_LDADD = @LIBOBJS@  @X_PRE_LIBS@ @X_LIBS@ @X_EXTRA_LIBS@ -lXt -lXmu -lXaw -lXext -lX11 -lHX
 
 DEFS= @DEFS@
 

@@ -24,13 +24,13 @@
 
 #include <unistd.h>
 #include <X11/Intrinsic.h>
+#include <libHX/deque.h>
 
 #ifdef HAVE_CCLIENT
 #include <c-client/mail.h>
 #include <c-client/osdep.h>
 #endif
 
-#include "libdyn/dyn.h"
 #include "patchlevel.h"
 
 #define MAX_STRING 256
@@ -70,7 +70,7 @@ struct boxinfo {
   char *box;			/* the box filename or newsgroup */
   BoxType_t type;		/* the box type (mail, news, etc) */
 
-  DynObject articles; /* for newsgroups, the read pairs  */
+	struct HXdeque *articles; /* for newsgroups, the read pairs  */
 
   time_t box_mtime;		/* last time read */
   off_t st_size;		/* size of file on last read */

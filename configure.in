@@ -92,4 +92,4 @@ fi])
 AC_DEFINE_UNQUOTED(PRODUCT, "$PRODUCT")
 AC_SUBST(PRODUCT)
 
-AC_OUTPUT(Makefile libdyn/Makefile)
+AC_OUTPUT(Makefile)

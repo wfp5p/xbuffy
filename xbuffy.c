@@ -110,8 +110,8 @@ Widget toplevel;
 Widget *header;
 ApplicationData_t data;
 XtAppContext app;
-DynObject DynBoxObj;
-struct boxinfo *boxInfo;
+struct HXdeque *boxmap;
+//struct boxinfo *boxInfo;
 int *headerUp;
 int nBoxes = 0;
 int envPolltime = 0;
@@ -181,6 +181,19 @@ XrmOptionDescRec options[] = {
     {"-command", "*command", XrmoptionSepArg, 0},
 };
 
+static inline struct boxinfo *getbox(long i)
+{
+	const struct HXdeque_node *node;
+	long x = 0;
+
+	for (node = boxmap->first; node != NULL; node = node->next) {
+		if (i == x) return node->ptr;
+		x++;
+	}
+}
+
+
+
 void CheckBox(long i)
 {
     int num = 0;
@@ -194,9 +207,9 @@ void CheckBox(long i)
     Boolean beenTouched;
     Boolean isIcon = FALSE;
 
-    currentBox = &boxInfo[i];
+    currentBox = getbox(i);
 
-   switch (boxInfo[i].type)
+   switch (currentBox->type)
    {
 
 
@@ -439,7 +452,7 @@ void ButtonUpHandler(w, i, event, cont)
     else if (event->xbutton.button == 3)
     {
        struct boxinfo *currentBox;
-       currentBox = &boxInfo[*i];
+       currentBox = getbox(*i);
 
        setBoxColor(currentBox,0);
     }
@@ -470,7 +483,7 @@ static void PopupHeader(Widget w, long i, XEvent *event, Boolean *cont)
 
 #endif
 
-    currentBox = &boxInfo[i];
+    currentBox = getbox(i);
 
     if (rootH == 0)
     {
@@ -481,17 +494,17 @@ static void PopupHeader(Widget w, long i, XEvent *event, Boolean *cont)
 
     firstTime = FALSE;
 
-     switch (boxInfo[i].type)
+     switch (currentBox->type)
      {
 
 #ifdef USE_NNTP
       case NNTPBOX:
-	 number = CountNNTP(&boxInfo[i], mailHeaders, &beenTouched);break;
+	 number = CountNNTP(currentBox, mailHeaders, &beenTouched);break;
 #endif
 
 #ifdef HAVE_CCLIENT
     case CCLIENTBOX:
-      number = CountIMAP(&boxInfo[i], mailHeaders, &beenTouched);break;
+      number = CountIMAP(currentBox, mailHeaders, &beenTouched);break;
 #endif
 
 
@@ -503,10 +516,10 @@ static void PopupHeader(Widget w, long i, XEvent *event, Boolean *cont)
 
     /* if the number is different, update it */
     currentBox->n = number;
-    UpdateBoxNumber(&boxInfo[i]);
+    UpdateBoxNumber(currentBox);
 
     /* if the number is zero, there's no header, so leave */
-    if (boxInfo[i].n == 0)
+    if (currentBox->n == 0)
     {
         return;
     }
@@ -623,13 +636,13 @@ void BreakPopup(w, i, event, cont)
 
 void ExecuteCommand(w, i, event, cont)
     Widget w;
-    int i;
+    long i;
     XEvent *event;
     Boolean *cont;
 {
     struct boxinfo *currentBox;
 
-    currentBox = &boxInfo[i];
+    currentBox = getbox(i);
 
     if (currentBox->command != NULL)
     {
@@ -827,14 +840,8 @@ void initBox(char *box, BoxType_t BoxType, int pollTime, int headerTime,
     tempBox.boxNum = nBoxes;
 
     if (BoxType == NNTPBOX)
-    {
-        tempBox.articles = DynCreate(sizeof(Articles_t), 2);
-#ifdef DEBUG
-/*        DynDebug(tempBox.articles, 1);
-        DynParanoid(tempBox.articles, 1);*/
-#endif
+    	    tempBox.articles = HXdeque_init();
 
-    }
     if ((pollTime < 0) || (pollTime >= 3600))
         tempBox.pollTime = envPolltime;
     else
@@ -915,9 +922,7 @@ void initBox(char *box, BoxType_t BoxType, int pollTime, int headerTime,
 #endif
 
 
-    DynAdd(DynBoxObj, &tempBox);
-    boxInfo = (struct boxinfo *) DynGet(DynBoxObj, 0);
-
+    HXdeque_push(boxmap, HX_memdup(&tempBox, sizeof(tempBox)));
     nBoxes++;
 }
 
@@ -1136,7 +1141,7 @@ int main(argc, argv)
     int nargs;
     int pid;
     int ret;
-
+    const struct HXdeque_node *node;
 
 #ifdef DEBUG
    char pause_string[10];
@@ -1161,14 +1166,7 @@ int main(argc, argv)
     mailArgs = TRUE;
 
     nBoxes = 0;
-    DynBoxObj = DynCreate(sizeof(struct boxinfo), 1);
-
-#ifdef DEBUG
-    DynDebug(DynBoxObj, 1);
-    DynParanoid(DynBoxObj, 1);
-#endif
-
-    boxInfo = (struct boxinfo *) DynGet(DynBoxObj, 0);
+    boxmap = HXdeque_init();
 
     nargs = 0;
     XtSetArg(args[nargs], XtNallowShellResize, TRUE);
@@ -1350,22 +1348,22 @@ int main(argc, argv)
 
     for (i = 0; i < nBoxes; i++)
     {
-
         Boolean dummy;
+	struct boxinfo *currentBox = getbox(i);
 
         headerUp[i] = FALSE;
 
-        if (boxInfo[i].type == MAILBOX)
-            boxInfo[i].n = CountUnixMail(&boxInfo[i], NULL, &dummy);
+        if (currentBox->type == MAILBOX)
+		currentBox->n = CountUnixMail(currentBox, NULL, &dummy);
 
 #ifdef USE_NNTP
-        if (boxInfo[i].type == NNTPBOX)
-            boxInfo[i].n = CountNNTP(&boxInfo[i], NULL, &dummy);
+        if (currentBox->type == NNTPBOX)
+		currentBox->n = CountNNTP(currentBox, NULL, &dummy);
 #endif
 
 #ifdef HAVE_CCLIENT
-        if (boxInfo[i].type == CCLIENTBOX)
-	    boxInfo[i].n = CountIMAP(&boxInfo[i], NULL, &dummy);
+        if (currentBox->type == CCLIENTBOX)
+		currentBox->n = CountIMAP(currentBox, NULL, &dummy);
 #endif
 
         sprintf(name, "box%d", i);
@@ -1383,34 +1381,32 @@ int main(argc, argv)
         XtSetArg(args[nargs], XtNallowResize, True);
         nargs++;
 
+        currentBox->w = XtCreateManagedWidget(name, commandWidgetClass, form, args, nargs);
 
 
-        boxInfo[i].w = XtCreateManagedWidget(name, commandWidgetClass, form, args, nargs);
-
-
-        XtAddEventHandler(boxInfo[i].w, ButtonPressMask, True,
+        XtAddEventHandler(currentBox->w, ButtonPressMask, True,
                           (XtEventHandler) ButtonDownHandler,
-			  &boxInfo[i].boxNum);
-        XtAddEventHandler(boxInfo[i].w,
+			  &currentBox->boxNum);
+        XtAddEventHandler(currentBox->w,
 			  ButtonReleaseMask,
 			  True,
                           (XtEventHandler) ButtonUpHandler,
-			  &boxInfo[i].boxNum);
+			  &currentBox->boxNum);
 
 #else
         nargs = 0;
         XtSetArg(args[nargs], XmNresizable, TRUE);
         nargs++;
-        boxInfo[i].w = XmCreatePushButton(form, name, args, nargs);
-        XtManageChild(boxInfo[i].w);
-        XtAddEventHandler(boxInfo[i].w, ButtonPressMask, True,
-                          ButtonDownHandler, &boxInfo[i].boxNum);
-        XtAddEventHandler(boxInfo[i].w, ButtonReleaseMask, True,
-                          ButtonUpHandler, &boxInfo[i].boxNum);
+        currentBox->w = XmCreatePushButton(form, name, args, nargs);
+        XtManageChild(currentBox->w);
+        XtAddEventHandler(currentBox->w, ButtonPressMask, True,
+                          ButtonDownHandler, currentBox->boxNum);
+        XtAddEventHandler(currentBox->w, ButtonReleaseMask, True,
+                          ButtonUpHandler, currentBox->boxNum);
 
 #endif
 
-        UpdateBoxNumber(&boxInfo[i]);
+        UpdateBoxNumber(currentBox);
 
         CheckBox(i);
     }
@@ -1419,13 +1415,14 @@ int main(argc, argv)
     fprintf(stderr, "bg = %i, fg = %i maxSize = %i\n", data.bg, data.fg,maxBoxSize);
     for (i = 0; i < nBoxes; i++)
     {
-        fprintf(stderr, "box = %s\n", boxInfo[i].box);
-        fprintf(stderr, "pollTime = %i\n", boxInfo[i].pollTime);
-        fprintf(stderr, "headerTime = %i\n", boxInfo[i].headerTime);
-        fprintf(stderr, "origMode = %i\n", boxInfo[i].origMode);
-        fprintf(stderr, "nobeep = %i\n", boxInfo[i].nobeep);
-        fprintf(stderr, "command = %s\n", boxInfo[i].command);
-        fprintf(stderr, "nameType = %i\n", boxInfo[i].BoxNameType);
+	struct boxinfo *currentBox = getbox(i);
+        fprintf(stderr, "box = %s\n", currentBox->box);
+        fprintf(stderr, "pollTime = %i\n", currentBox->pollTime);
+        fprintf(stderr, "headerTime = %i\n", currentBox->headerTime);
+        fprintf(stderr, "origMode = %i\n", currentBox->origMode);
+        fprintf(stderr, "nobeep = %i\n", currentBox->nobeep);
+        fprintf(stderr, "command = %s\n", currentBox->command);
+        fprintf(stderr, "nameType = %i\n", currentBox->BoxNameType);
 
     }
 #endif
