@@ -8,7 +8,7 @@ EXTRA_DIST = XBuffy.ad boxfile.fmt boxfile.sample xbuffy.xbm xbuffy.1 README.ima
 man_MANS = xbuffy.1
 
 SUBDIRS = libdyn
-xbuffy_LDADD = libdyn/libdyn.a @LIBOBJS@  @X_PRE_LIBS@ @X_LIBS@ @X_EXTRA_LIBS@ -lXt -lXmu -lXaw -lXext -lX11
+xbuffy_LDADD = libdyn/libdyn.a @LIBOBJS@  @X_PRE_LIBS@ @X_LIBS@ @X_EXTRA_LIBS@ -lXt -lXmu -lXaw -lXext -lX11 -lHX
 
 DEFS= @DEFS@
 

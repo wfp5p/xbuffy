@@ -34,9 +34,11 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <ctype.h>
+#include <errno.h>
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <sys/stat.h>
+#include <libHX/init.h>
 #include "xbuffy.h"
 #ifndef MOTIF
 #include <X11/Intrinsic.h>
@@ -1164,15 +1166,23 @@ int main(argc, argv)
     Arg args[5];
     int nargs;
     int pid;
+    int ret;
+
 
 #ifdef DEBUG
    char pause_string[10];
 /*  gets(pause_string);*/
 #endif
-   
+
 #ifdef HAVE_CCLIENT
 #include <c-client/linkage.c>
 #endif
+
+   ret = HX_init();
+   if (ret <= 0) {
+	   fprintf(stderr, "libHX init failed: %s\n", strerror(errno));
+	   exit(1);
+   }
 
     /* initialize program name and version string */
     programName = EliminatePath(argv[0]);
