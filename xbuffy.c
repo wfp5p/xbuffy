@@ -75,7 +75,10 @@
 
 void CheckBox();
 void TimerBreakPopup();
-int CountUnixMail();
+static int CountUnixMail(struct boxinfo *mailBox,
+		  hxmc_t **headerString,
+		  Boolean *beenTouched);
+
 void ParseMailPath();
 int makeBoxTitle();
 void initBox(char *box, BoxType_t BoxType, int pollTime, int headerTime,
@@ -456,8 +459,8 @@ static void PopupHeader(Widget w, long i, XEvent *event, Boolean *cont)
     static int rootW = 0;
     int number = 0;
     static Boolean firstTime = TRUE;
-    static DynObject mailHeaders;
-    static char *hdrPtr;
+    hxmc_t *mailHeaders = HXmc_meminit(NULL, 0);
+        static char *hdrPtr;
     Dimension headerW, headerH;
     struct boxinfo *currentBox;
     Boolean beenTouched;
@@ -476,18 +479,7 @@ static void PopupHeader(Widget w, long i, XEvent *event, Boolean *cont)
     }
 
 
-    if ((!firstTime) && (DynSize(mailHeaders) != 0))
-    {
-        DynDestroy(mailHeaders);
-    }
-
     firstTime = FALSE;
-    mailHeaders = DynCreate(sizeof(char), MAX_STRING);
-
-#ifdef DEBUG
-    DynDebug(mailHeaders, 1);
-    DynParanoid(mailHeaders, 1);
-#endif
 
      switch (boxInfo[i].type)
      {
@@ -504,11 +496,10 @@ static void PopupHeader(Widget w, long i, XEvent *event, Boolean *cont)
 
 
     case MAILBOX:
-        number = CountUnixMail(currentBox, mailHeaders, &beenTouched);break;
+        number = CountUnixMail(currentBox, &mailHeaders, &beenTouched);break;
      }
 
-    DynAdd(mailHeaders, "\0");
-    hdrPtr = (char *) DynGet(mailHeaders, 0);
+     hdrPtr = (char *) mailHeaders;
 
     /* if the number is different, update it */
     currentBox->n = number;
@@ -667,10 +658,9 @@ int isLocked(mbox)
    return(retVal);
 }
 
-int CountUnixMail(mailBox, headerString, beenTouched)
-    struct boxinfo *mailBox;
-    DynObject headerString;
-    Boolean *beenTouched;
+static int CountUnixMail(struct boxinfo *mailBox,
+		  hxmc_t **headerString,
+		  Boolean *beenTouched)
 {
     FILE *fp = 0;
     char buffer[MAX_STRING];
@@ -684,7 +674,6 @@ int CountUnixMail(mailBox, headerString, beenTouched)
 
     if (isLocked(mailBox->box))
        return (mailBox->n);
-
 
     stat(mailBox->box, &f_stat);
 
@@ -771,10 +760,10 @@ int CountUnixMail(mailBox, headerString, beenTouched)
                     if (headerString != NULL)
                     {
                         if (NEWstrlen(From) != 0)
-                            DynInsert(headerString, ((DynHigh(headerString) > 0) ? (DynSize(headerString)) : 0), From, NEWstrlen(From));
+				HXmc_strcat(headerString, From);
 
                         if (NEWstrlen(Subject) != 0)
-                            DynInsert(headerString, ((DynHigh(headerString) > 0) ? (DynSize(headerString)) : 0), Subject, NEWstrlen(Subject));
+				HXmc_strcat(headerString, Subject);
                     }
                 }
                 From[0] = Subject[0] = '\0';

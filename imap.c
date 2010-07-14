@@ -21,7 +21,7 @@ MAILSTATUS mailstatus;
 void AddImapHeaders(stream, msgno, headerString)
 	MAILSTREAM *stream;
 	unsigned long msgno;
-	DynObject headerString;
+	hxmc_t **headerString;
 
 {
 	char From[MAX_STRING], Subject[MAX_STRING];
@@ -52,10 +52,10 @@ void AddImapHeaders(stream, msgno, headerString)
 	strcat(Subject, "\n");
 
 	if (NEWstrlen(From) != 0)
-		DynInsert(headerString, ((DynHigh(headerString) > 0) ? (DynSize(headerString)) : 0), From, NEWstrlen(From));
+		HX_strcat(headerString, From);
 
 	if (NEWstrlen(Subject) != 0)
-		DynInsert(headerString, ((DynHigh(headerString) > 0) ? (DynSize(headerString)) : 0), Subject, NEWstrlen(Subject));
+		HX_strcat(headerString, Subject);
 
 	From[0] = Subject[0] = '\0';
 
@@ -66,7 +66,7 @@ void AddImapHeaders(stream, msgno, headerString)
 
 int CountIMAPunseen(mailBox, headerString)
 	struct boxinfo *mailBox;
-	DynObject headerString;
+	hxmc_t **headerString;
 {
 	unsigned long j, messages, *msgno_ptr;
 	int i;
@@ -115,7 +115,7 @@ int CountIMAPunseen(mailBox, headerString)
 
 int CountIMAP(mailBox, headerString, beenTouched)
 	struct boxinfo *mailBox;
-	DynObject headerString;
+	hxmc_t **headerString;
 	Boolean *beenTouched;
 {
 	long ping;

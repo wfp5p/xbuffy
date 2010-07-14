@@ -288,10 +288,9 @@ int insideBox(x, firstNum, lastNum)
 
 
 
-int CountNNTP(newsBox, headerString, beenTouched)
-	struct boxinfo *newsBox;
-	DynObject headerString;
-	Boolean *beenTouched;
+int CountNNTP(struct boxinfo *mailBox,
+	      hxmc_t **headerString,
+	      Boolean *beenTouched)
 {
 	int sock, err, len;
 	char line[1024];
@@ -308,8 +307,6 @@ int CountNNTP(newsBox, headerString, beenTouched)
 	int index;
 	struct stat f_stat;
 	Articles_t *artP;
-
-
 
 	if (!NNTPinit)
 		initNNTP();
@@ -334,18 +331,18 @@ int CountNNTP(newsBox, headerString, beenTouched)
 
 #ifdef DEBUG
    printf("countNNTP: send %s\n",line);
-#endif    
+#endif
 
         /* get return line */
 	fgets(line, sizeof(line), NNTP_fIn);
 	if (atoi(line) != 211)
 		Fatal("unexpected response to group line: %s", line);
-   
+
 	if (4 != sscanf(line, "%ld %ld %ld %ld", &retVal, &numberArticles, &firstArticle, &lastArticle))
 		Fatal("couldn't parse group line: %s", line);
 #ifdef DEBUG
    printf("countNNTP: read %s\n",line);
-#endif   
+#endif
 
 	stat(getNewsrc(), &f_stat);
 
@@ -389,8 +386,8 @@ int CountNNTP(newsBox, headerString, beenTouched)
 				if (headerString != NULL)
 				{
 					from[NEWstrlen(from) - 1] = subject[NEWstrlen(subject) - 1] = '\0';
-					DynInsert(headerString, ((DynHigh(headerString) > 0) ? (DynHigh(headerString) + 1) : 0), from, NEWstrlen(from));
-					DynInsert(headerString, ((DynHigh(headerString) > 0) ? (DynHigh(headerString) + 1) : 0), subject, NEWstrlen(subject));
+					HXmc_strcat(headerString, from);
+					HXmc_strcat(headerString, subject);
 				}
 
 				free(from);
