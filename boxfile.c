@@ -42,9 +42,7 @@ enum TokType
 
 typedef enum TokType TokenType;
 
-TokenType token(line, next)
-	char *line;
-	char *next;
+static TokenType token(char *line, char *next)
 {
 	char tok[30];
 	char *p1;
@@ -80,8 +78,7 @@ TokenType token(line, next)
 }
 
 
-void clearBox(tempBox)
-	struct boxinfo *tempBox;
+static void clearBox(struct boxinfo *tempBox)
 {
         checkAndFree(tempBox->box);
 	checkAndFree(tempBox->command);
@@ -111,8 +108,7 @@ void clearBox(tempBox)
 }
 
 
-char *parseTwiddle(str)
-	char *str;
+static char *parseTwiddle(char *str)
 {
 	static char retVal[MAX_STRING];
 	char *ptr, *res;
@@ -139,8 +135,7 @@ char *parseTwiddle(str)
 	return (retVal);
 }
 
-char *parseEnv(str)
-   char *str;
+static char *parseEnv(char *str)
 {
    static char retVal[MAX_STRING];
    char envStr[MAX_STRING];
@@ -224,8 +219,7 @@ void dumpBox(tempBox)
 
 
 
-void readBoxfile(boxFile)
-	char *boxFile;
+void readBoxfile(char *boxFile)
 {
 	struct boxinfo tempBox;
 	FILE *boxes;
@@ -237,7 +231,6 @@ void readBoxfile(boxFile)
         tempBox.stream = NULL;
 
 	clearBox(&tempBox);
-
 
 	if ((boxes = fopen(boxFile, "r")) == 0)
 	{
