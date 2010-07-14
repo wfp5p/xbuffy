@@ -39,6 +39,7 @@
 #include <sys/resource.h>
 #include <sys/stat.h>
 #include <libHX/init.h>
+#include <libHX/string.h>
 #include "xbuffy.h"
 #ifndef MOTIF
 #include <X11/Intrinsic.h>
@@ -832,7 +833,7 @@ void initBox(char *box, BoxType_t BoxType, int pollTime, int headerTime,
     fprintf(stderr, "keepopen = %i\n\n",keepopen);
 #endif
 
-    tempBox.box = NEWstrdup(box);
+    tempBox.box = HX_strdup(box);
     tempBox.type = BoxType;
     tempBox.boxNum = nBoxes;
 
@@ -860,7 +861,7 @@ void initBox(char *box, BoxType_t BoxType, int pollTime, int headerTime,
 
     tempBox.BoxNameType = BoxNameType;
 
-    tempBox.boxTitle = NEWstrdup(title);
+    tempBox.boxTitle = HX_strdup(title);
 
     if (tempBox.BoxNameType == UNDEF)
     {
@@ -874,8 +875,8 @@ void initBox(char *box, BoxType_t BoxType, int pollTime, int headerTime,
     if (boxSize > maxBoxSize)
        maxBoxSize = boxSize;
 
-    tempBox.command = NEWstrdup(command);
-    tempBox.audioCmd = NEWstrdup(audioCmd);
+    tempBox.command = HX_strdup(command);
+    tempBox.audioCmd = HX_strdup(audioCmd);
     tempBox.origMode = origMode;
     tempBox.nobeep = nobeep;
 
@@ -954,7 +955,7 @@ void ParseMailPath()
     str = (char *) strtok(boxes, ":, ");
     while (str != NULL)
     {
-        initBox(NEWstrdup(str), MAILBOX, envPolltime, envHeadertime, UNDEF, data.command,
+        initBox(HX_strdup(str), MAILBOX, envPolltime, envHeadertime, UNDEF, data.command,
                 data.audioCmd, NULL, data.origMode, data.nobeep,NULL,NULL,0,0);
 
         str = (char *) strtok(NULL, ":, ");
@@ -996,7 +997,7 @@ void ParseNewsPath()
         struct boxinfo tempBox;
 
         tempBox.boxNum = nBoxes;
-        tempBox.box = NEWstrdup(str);
+        tempBox.box = HX_strdup(str);
         boxInfo[nBoxes].type = NNTPBOX;
         boxInfo[nBoxes].n = CountNNTP(&boxInfo[nBoxes], NULL, NULL);
         nBoxes++;
@@ -1059,7 +1060,7 @@ int makeBoxTitle(currentBox)
         }
 
         if (line[0] != '\0')
-            currentBox->boxTitle = NEWstrdup(line);
+            currentBox->boxTitle = HX_strdup(line);
     }
     else
     {
@@ -1076,7 +1077,7 @@ int makeBoxTitle(currentBox)
         }
 
         if (line[0] != '\0')
-            currentBox->boxTitle = NEWstrdup(line);
+            currentBox->boxTitle = HX_strdup(line);
     }
 
    if ( currentBox->boxTitle != NULL)
@@ -1261,7 +1262,7 @@ int main(argc, argv)
 
             if (mailArgs)
             {
-                initBox(NEWstrdup(*argv), MAILBOX, envPolltime, envHeadertime,
+                initBox(HX_strdup(*argv), MAILBOX, envPolltime, envHeadertime,
                         UNDEF, data.command, data.audioCmd, NULL,
 			data.origMode, data.nobeep, NULL, NULL, 0, 0);
 
@@ -1271,7 +1272,7 @@ int main(argc, argv)
             else
             {
 
-                initBox(NEWstrdup(*argv), NNTPBOX, envPolltime, envHeadertime,
+                initBox(HX_strdup(*argv), NNTPBOX, envPolltime, envHeadertime,
                         UNDEF, data.command, data.audioCmd, NULL,
 			data.origMode, data.nobeep, NULL, NULL, 0, 0);
 
