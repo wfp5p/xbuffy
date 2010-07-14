@@ -90,7 +90,7 @@ void ButtonUpHandler();
 void BreakPopup();
 void ExecuteCommand();
 void setBoxColor();
-void PopupHeader();
+static void PopupHeader(Widget w, long i, XEvent *event, Boolean *cont);
 char *EliminatePath();
 void UpdateBoxNumber();
 
@@ -174,8 +174,7 @@ XrmOptionDescRec options[] = {
     {"-command", "*command", XrmoptionSepArg, 0},
 };
 
-void CheckBox(i)
-    int i;
+void CheckBox(long i)
 {
     int num = 0;
     Arg args[5];
@@ -442,11 +441,7 @@ void ButtonUpHandler(w, i, event, cont)
 
 
 
-void PopupHeader(w, i, event, cont)
-    Widget w;
-    int i;
-    XEvent *event;
-    Boolean *cont;
+static void PopupHeader(Widget w, long i, XEvent *event, Boolean *cont)
 {
     Arg args[5];
     int nargs;
