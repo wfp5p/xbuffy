@@ -27,7 +27,7 @@ AC_TYPE_SIGNAL
 AC_CHECK_HEADERS(fcntl.h malloc.h strings.h sys/time.h unistd.h)
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS(gettimeofday socket setpriority memcpy)
-AC_REPLACE_FUNCS(strdup strncasecmp)
+AC_REPLACE_FUNCS(strncasecmp)
 AC_TYPE_OFF_T
 AC_HEADER_TIME
 

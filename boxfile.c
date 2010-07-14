@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <libHX/string.h>
 #include "xbuffy.h"
 
 #define cmpTok(tok,str,tokVal) {if ( strcmp(tok,str) == 0) return(tokVal);}
@@ -270,23 +271,23 @@ void readBoxfile(char *boxFile)
 				clearBox(&tempBox);
 			}
 
-			tempBox.box = (char *) strdup(parseTwiddle(parseEnv(next)));
+			tempBox.box = (char *) HX_strdup(parseTwiddle(parseEnv(next)));
 			inBox = TRUE;
 
 
 			break;
 
 		case TITLE_T:
-			tempBox.boxTitle = (char *) strdup(next);
+			tempBox.boxTitle = (char *) HX_strdup(next);
 			tempBox.BoxNameType = USR;
 			break;
 
 		case COMMAND_T:
-			tempBox.command = (char *) strdup(next);
+			tempBox.command = (char *) HX_strdup(next);
 			break;
 
 		case AUDIO_T:
-			tempBox.audioCmd = (char *) strdup(next);
+			tempBox.audioCmd = (char *) HX_strdup(next);
 			break;
 
 		case MAILBOX_T:
@@ -351,11 +352,11 @@ void readBoxfile(char *boxFile)
 			break;
 
                 case BG_T:
-		        tempBox.bgName = (char *) strdup(next);
+		        tempBox.bgName = (char *) HX_strdup(next);
 		        break;
 
 	        case FG_T:
-		        tempBox.fgName = (char *) strdup(next);
+		        tempBox.fgName = (char *) HX_strdup(next);
 		        break;
 
 		default:

@@ -29,7 +29,7 @@
 #include <varargs.h>
 #include <errno.h>
 #include <sys/stat.h>
-
+#include <libHX/string.h>
 
 
 #define CR		(13)

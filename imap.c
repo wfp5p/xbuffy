@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <libHX/string.h>
 #include "xbuffy.h"
 
 #ifdef HAVE_CCLIENT
@@ -358,7 +359,7 @@ void mm_login(NETMBX * mb, char *uname, char *passwd, long trial)
 			uname[i] = '\0';
 			if (CurrentBox)
 			{
-				CurrentBox->uname = strdup(uname);
+				CurrentBox->uname = HX_strdup(uname);
 				printf("CurrentBox->uname=%s\n", CurrentBox->uname);
 			}
 		}
@@ -367,7 +368,7 @@ void mm_login(NETMBX * mb, char *uname, char *passwd, long trial)
 			fflush(stdout);
 			strcpy(passwd, getpass("password: "));
 			if (CurrentBox)
-				CurrentBox->passwd = strdup(passwd);
+				CurrentBox->passwd = HX_strdup(passwd);
 		}
 	}
 }
