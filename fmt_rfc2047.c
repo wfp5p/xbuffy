@@ -1,5 +1,5 @@
 /*
- * fmt_rfc2047.c -- decode RFC-2047 header format 
+ * fmt_rfc2047.c -- decode RFC-2047 header format
  *
  * $Id: fmt_rfc2047.c,v 1.1.1.1 1999/04/30 18:08:34 doug Exp $
  *
@@ -13,6 +13,7 @@
 
 
 #include <stdlib.h>
+#include <string.h>
 
 static signed char hexindex[] = {
     -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
@@ -47,7 +48,7 @@ static signed char index_64[128] = {
  */
 
 int
-check_charset (char *str, int len) 
+check_charset (char *str, int len)
 {
     static char *mm_charset = NULL;
     static char *alt_charset = NULL;
@@ -113,7 +114,7 @@ unqp (unsigned char byte1, unsigned char byte2)
  */
 
 int
-decode_rfc2047 (char *dst, char *str) 
+decode_rfc2047 (char *dst, char *str)
 {
     char *p, *q, *pp;
     char *startofmime, *endofmime;
