@@ -79,7 +79,7 @@ static TokenType token(char *line, char *next)
 }
 
 
-static void clearBox(struct boxinfo *tempBox)
+void clearBox(struct boxinfo *tempBox)
 {
         checkAndFree(tempBox->box);
 	checkAndFree(tempBox->command);
@@ -368,20 +368,21 @@ void readBoxfile(char *boxFile)
 	if (inBox)
 #ifndef TESTBOX
 		initBox(tempBox.box,
-				tempBox.type, tempBox.pollTime,
-				tempBox.headerTime, tempBox.BoxNameType,
-				tempBox.command,
-				tempBox.audioCmd,
-				tempBox.boxTitle,
-				tempBox.origMode, tempBox.nobeep,tempBox.bgName,tempBox.fgName,
-			        tempBox.countperiod,
-                                tempBox.keepopen);
+			tempBox.type, tempBox.pollTime,
+			tempBox.headerTime, tempBox.BoxNameType,
+			tempBox.command,
+			tempBox.audioCmd,
+			tempBox.boxTitle,
+			tempBox.origMode, tempBox.nobeep,tempBox.bgName,tempBox.fgName,
+			tempBox.countperiod,
+			tempBox.keepopen);
 
 #else
 		dumpBox(tempBox);
 #endif
 
 	fclose(boxes);
+	clearBox(&tempBox);
 
 }
 

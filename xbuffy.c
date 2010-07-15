@@ -807,9 +807,12 @@ void initBox(char *box, BoxType_t BoxType, int pollTime, int headerTime,
 	     char *bgName, char *fgName, int countperiod, Boolean keepopen)
 {
 
-    struct boxinfo tempBox;
+    struct boxinfo *tempBox;
     int boxSize;
     char *ptr;
+
+    tempBox = malloc(sizeof(*tempBox));
+    memset(tempBox, 0, sizeof(*tempBox));
 
     HX_strrtrim(box);
 
@@ -827,94 +830,93 @@ void initBox(char *box, BoxType_t BoxType, int pollTime, int headerTime,
     fprintf(stderr, "keepopen = %i\n\n",keepopen);
 #endif
 
-    tempBox.box = HX_strdup(box);
-    tempBox.type = BoxType;
-    tempBox.boxNum = nBoxes;
+    tempBox->box = HX_strdup(box);
+    tempBox->type = BoxType;
+    tempBox->boxNum = nBoxes;
 
     if (BoxType == NNTPBOX)
-    	    tempBox.articles = HXdeque_init();
+    	    tempBox->articles = HXdeque_init();
 
     if ((pollTime < 0) || (pollTime >= 3600))
-        tempBox.pollTime = envPolltime;
+        tempBox->pollTime = envPolltime;
     else
-        tempBox.pollTime = pollTime;
+        tempBox->pollTime = pollTime;
 
-    if ((tempBox.type == NNTPBOX) && (tempBox.pollTime < 180))
-        tempBox.pollTime = 180;
+    if ((tempBox->type == NNTPBOX) && (tempBox->pollTime < 180))
+        tempBox->pollTime = 180;
 
     if ((headerTime < 0) || (headerTime >= 60))
-        tempBox.headerTime = envHeadertime;
+        tempBox->headerTime = envHeadertime;
     else
-        tempBox.headerTime = headerTime;
+        tempBox->headerTime = headerTime;
 
-    tempBox.BoxNameType = BoxNameType;
+    tempBox->BoxNameType = BoxNameType;
 
-    tempBox.boxTitle = HX_strdup(title);
+    tempBox->boxTitle = HX_strdup(title);
 
-    if (tempBox.BoxNameType == UNDEF)
+    if (tempBox->BoxNameType == UNDEF)
     {
         if (data.shortNames)
-            tempBox.BoxNameType = SHORT;
+            tempBox->BoxNameType = SHORT;
         if (data.longNames)
-            tempBox.BoxNameType = LONG;
+            tempBox->BoxNameType = LONG;
     }
 
-    boxSize = makeBoxTitle(&tempBox);
+    boxSize = makeBoxTitle(tempBox);
     if (boxSize > maxBoxSize)
        maxBoxSize = boxSize;
 
-    tempBox.command = HX_strdup(command);
-    tempBox.audioCmd = HX_strdup(audioCmd);
-    tempBox.origMode = origMode;
-    tempBox.nobeep = nobeep;
+    tempBox->command = HX_strdup(command);
+    tempBox->audioCmd = HX_strdup(audioCmd);
+    tempBox->origMode = origMode;
+    tempBox->nobeep = nobeep;
 
     if (bgName != NULL)
-       tempBox.bg = convertColor(bgName,data.bg);
+       tempBox->bg = convertColor(bgName,data.bg);
     else
-       tempBox.bg = data.bg;
+       tempBox->bg = data.bg;
 
     if (fgName != NULL)
-       tempBox.fg = convertColor(fgName,data.fg);
+       tempBox->fg = convertColor(fgName,data.fg);
     else
-       tempBox.fg = data.fg;
+       tempBox->fg = data.fg;
 
 
-    tempBox.box_mtime = tempBox.st_size = 0;
+    tempBox->box_mtime = tempBox->st_size = 0;
 
 #ifdef HAVE_CCLIENT
     if (BoxType == CCLIENTBOX)
       {
-	tempBox.stream = NULL;
-        tempBox.uname = tempBox.passwd = NULL;
-	tempBox.keepopen = keepopen;
+	tempBox->stream = NULL;
+        tempBox->uname = tempBox->passwd = NULL;
+	tempBox->keepopen = keepopen;
 
-	 if (tempBox.keepopen)
+	 if (tempBox->keepopen)
 	 {
 	    CurrentBox = &tempBox;
 
-	    while (!tempBox.stream)
-	       tempBox.stream = mail_open(NIL, tempBox.box, OP_READONLY);
+	    while (!tempBox->stream)
+	       tempBox->stream = mail_open(NIL, tempBox->box, OP_READONLY);
 
             CurrentBox = NULL;
 
-            if (!tempBox.stream)
+            if (!tempBox->stream)
             {
-	      fprintf(stderr,"Can't open IMAP mailbox %s\n",tempBox.box);
+	      fprintf(stderr,"Can't open IMAP mailbox %s\n",tempBox->box);
 	    }
 	 }
 	 else
 	 {
-	   tempBox.stream = NULL;
+	   tempBox->stream = NULL;
 	 }
 
-	tempBox.num_seen_estimate = 0;
-	tempBox.countperiod = countperiod;
-	tempBox.cycle = countperiod-1;
+	tempBox->num_seen_estimate = 0;
+	tempBox->countperiod = countperiod;
+	tempBox->cycle = countperiod-1;
       }
 #endif
 
-
-    HXdeque_push(boxmap, HX_memdup(&tempBox, sizeof(tempBox)));
+    HXdeque_push(boxmap, tempBox);
     nBoxes++;
 }
 
@@ -941,7 +943,7 @@ void ParseMailPath()
     str = (char *) strtok(boxes, ":, ");
     while (str != NULL)
     {
-        initBox(HX_strdup(str), MAILBOX, envPolltime, envHeadertime, UNDEF, data.command,
+        initBox(str, MAILBOX, envPolltime, envHeadertime, UNDEF, data.command,
                 data.audioCmd, NULL, data.origMode, data.nobeep,NULL,NULL,0,0);
 
         str = (char *) strtok(NULL, ":, ");
@@ -1025,7 +1027,7 @@ int makeBoxTitle(currentBox)
 		strcpy(line, HX_basename(currentBox->box));
             break;
         case LONG:
-            strcpy(line, currentBox->box);
+		strcpy(line, currentBox->box);
             break;
         case NONE:
         case USR:
@@ -1033,7 +1035,7 @@ int makeBoxTitle(currentBox)
             break;
         }
 
-        if (line[0] != '\0')
+        if ( (line[0] != '\0') && (!currentBox->boxTitle) )
             currentBox->boxTitle = HX_strdup(line);
     }
     else
@@ -1050,14 +1052,14 @@ int makeBoxTitle(currentBox)
             break;
         }
 
-        if (line[0] != '\0')
+        if ( (line[0] != '\0') && (!currentBox->boxTitle) )
             currentBox->boxTitle = HX_strdup(line);
     }
 
    if ( currentBox->boxTitle != NULL)
-     return(NEWstrlen(currentBox->boxTitle));
+	   return NEWstrlen(currentBox->boxTitle);
    else
-     return(0);
+     return 0;
 
 }
 
@@ -1228,7 +1230,7 @@ int main(argc, argv)
 
             if (mailArgs)
             {
-                initBox(HX_strdup(*argv), MAILBOX, envPolltime, envHeadertime,
+                initBox(*argv, MAILBOX, envPolltime, envHeadertime,
                         UNDEF, data.command, data.audioCmd, NULL,
 			data.origMode, data.nobeep, NULL, NULL, 0, 0);
 
@@ -1238,7 +1240,7 @@ int main(argc, argv)
             else
             {
 
-                initBox(HX_strdup(*argv), NNTPBOX, envPolltime, envHeadertime,
+                initBox(*argv, NNTPBOX, envPolltime, envHeadertime,
                         UNDEF, data.command, data.audioCmd, NULL,
 			data.origMode, data.nobeep, NULL, NULL, 0, 0);
 
