@@ -38,6 +38,7 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <sys/stat.h>
+#include <libHX/defs.h>
 #include <libHX/init.h>
 #include <libHX/string.h>
 #include "xbuffy.h"
@@ -110,7 +111,7 @@ Widget *header;
 ApplicationData_t data;
 XtAppContext app;
 struct HXdeque *boxmap;
-//struct boxinfo *boxInfo;
+struct boxinfo **boxinfo;
 int *headerUp;
 int nBoxes = 0;
 int envPolltime = 0;
@@ -182,16 +183,8 @@ XrmOptionDescRec options[] = {
 
 static inline struct boxinfo *getbox(long i)
 {
-	const struct HXdeque_node *node;
-	long x = 0;
-
-	for (node = boxmap->first; node != NULL; node = node->next) {
-		if (i == x) return node->ptr;
-		x++;
-	}
+	return boxinfo[i];
 }
-
-
 
 void CheckBox(long i)
 {
@@ -1152,7 +1145,6 @@ int main(argc, argv)
 
     mailArgs = TRUE;
 
-    nBoxes = 0;
     boxmap = HXdeque_init();
 
     nargs = 0;
@@ -1284,6 +1276,8 @@ int main(argc, argv)
         Usage();
         exit(-1);
     }
+
+    boxinfo = reinterpret_cast(struct boxinfo **, HXdeque_to_vec(boxmap, NULL));
 
     LoadIcon(toplevel);
 
