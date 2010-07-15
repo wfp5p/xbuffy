@@ -98,7 +98,6 @@ void BreakPopup();
 void ExecuteCommand();
 void setBoxColor();
 static void PopupHeader(Widget w, long i, XEvent *event, Boolean *cont);
-char *EliminatePath();
 void UpdateBoxNumber();
 
 
@@ -956,18 +955,6 @@ void ParseMailPath()
     }
 }
 
-
-char *EliminatePath(path)
-    char *path;
-{
-    char *file = 0;
-
-    file = (char *) strrchr(path, '/');
-    file = (file ? ++file : path);
-
-    return (file);
-}
-
 #ifdef USE_NNTP
 void ParseNewsPath()
 {
@@ -1042,7 +1029,7 @@ int makeBoxTitle(currentBox)
         switch (currentBox->BoxNameType)
         {
         case SHORT:
-            strcpy(line, EliminatePath(currentBox->box));
+		strcpy(line, HX_basename(currentBox->box));
             break;
         case LONG:
             strcpy(line, currentBox->box);
@@ -1159,7 +1146,7 @@ int main(argc, argv)
    }
 
     /* initialize program name and version string */
-    programName = EliminatePath(argv[0]);
+    programName = HX_basename(argv[0]);
     sprintf(versionString, "%s v%s.%s",
             programName, MAJOR_VERSION, MINOR_VERSION);
 
