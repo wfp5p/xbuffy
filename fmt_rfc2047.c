@@ -47,8 +47,7 @@ static signed char index_64[128] = {
  * character set to be a substring of a larger string.
  */
 
-int
-check_charset (char *str, int len)
+static int check_charset (char *str, int len)
 {
     static char *mm_charset = NULL;
     static char *alt_charset = NULL;
@@ -78,27 +77,7 @@ check_charset (char *str, int len)
 }
 
 
-/*
- * Return the name of the character set we are
- * using for 8bit text.
- */
-char *
-write_charset_8bit (void)
-{
-    static char *mm_charset = NULL;
-
-    /*
-     * Cache the name of the character set to
-     * use for 8bit text.
-     */
-    if (!mm_charset && !(mm_charset = getenv ("MM_CHARSET")))
-	    mm_charset = "x-unknown";
-
-    return mm_charset;
-}
-
-static int
-unqp (unsigned char byte1, unsigned char byte2)
+static int unqp (unsigned char byte1, unsigned char byte2)
 {
     if (hexindex[byte1] == -1 || hexindex[byte2] == -1)
 	return -1;
@@ -113,8 +92,7 @@ unqp (unsigned char byte1, unsigned char byte2)
  * Decode the string as a RFC-2047 header field
  */
 
-int
-decode_rfc2047 (char *dst, char *str)
+int decode_rfc2047 (char *dst, char *str)
 {
     char *p, *q, *pp;
     char *startofmime, *endofmime;
