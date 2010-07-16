@@ -1,10 +1,12 @@
 dnl| configure.in
 
 AC_INIT(xbuffy.c)
-AM_INIT_AUTOMAKE(xbuffy, 3.5)
-AM_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADERS(config.h)
+AH_TEMPLATE([HAVE_CCLIENT], [Define if the c-client lib is available])
+AH_TEMPLATE([USE_CONTENT_LENGTH], [Define if the Content-Length header is to be trusted])
+AH_TEMPLATE([USE_NNTP], [Define if the nntp support is desired])
 
-PRODUCT=xbuffy
+AM_INIT_AUTOMAKE(xbuffy, 3.5)
 
 if test -z "$CFLAGS" ; then
 dnl| Prevent the next macro from setting CFLAGS to -g
@@ -33,7 +35,7 @@ AC_HEADER_TIME
 
 AC_PATH_XTRA
 if test -n "$no_x" ; then
-  echo $PRODUCT requires the X Window System header files and libraries!
+  echo xbuffy requires the X Window System header files and libraries!
   echo They were not found on your system.
   echo configure failed
   exit 1
@@ -53,7 +55,7 @@ AC_ARG_WITH(cclient,
 
      AC_MSG_RESULT(yes)
      AC_MSG_RESULT(Assuming c-client headers are in $top_srcdir/imap/c-client.)
-     AC_DEFINE(HAVE_CCLIENT)
+     AC_DEFINE([HAVE_CCLIENT], [1])
      CFLAGS="$CFLAGS -I$srcdir/imap"
      LIBS="$srcdir/imap/c-client/c-client.a $LIBS"
      AC_CHECK_LIB(c, crypt, [true], AC_CHECK_LIB(crypt, crypt))
@@ -86,10 +88,5 @@ AC_ARG_ENABLE(content_length,
      AC_DEFINE(USE_CONTENT_LENGTH)
 fi])
 
-
-
-
-AC_DEFINE_UNQUOTED(PRODUCT, "$PRODUCT")
-AC_SUBST(PRODUCT)
 
 AC_OUTPUT(Makefile)
