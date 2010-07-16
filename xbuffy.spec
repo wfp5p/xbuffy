@@ -1,10 +1,13 @@
 Summary:  X-based multiple mailbox biff
 Name: xbuffy
-Version: 3.5
-Release: 2
+Version: 3.6
+Release: 1%{?dist}
 License: X Consortium
 Group: X11/Utilities
-Source: ftp.virginia.edu:/pub/src/xbuffy/xbuffy-3.5.tar.gz
+Source: xbuffy-3.6.tar.gz
+BuildRequires: libHX-devel >= 3.4
+BuildRequires: autoconf automake
+Requires: libHX >= 3.4
 Buildroot: %{_tmppath}/%{name}-root
 
 %description
@@ -12,9 +15,12 @@ Xbuffy is a program that watches multiple mailboxes and newsgroups
 and displays a count of new mail or news, and optionally displays a pop-up
 window containing the From: and Subject: lines when new mail or news
 arrives.  Xbuffy can also run a program (such as a xterm with your mail reader)
-when you click on the mailbox.  
+when you click on the mailbox.
+
 %prep
 %setup
+autoreconf -fi
+
 %build
 %configure
 make
