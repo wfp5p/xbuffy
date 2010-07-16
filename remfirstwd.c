@@ -25,14 +25,27 @@ char *string;
 
 	while (string[loc] == ' ' || string[loc] == '\t')
 	  loc++;
-	
+
 	move_left(string, loc);
 }
 
 */
 
-remove_header_keyword(string)
-	char *string;
+static void move_left(char *string, int chars)
+{
+	/** moves string chars characters to the left DESTRUCTIVELY **/
+
+	register char *source, *destination;
+
+	source = string + chars;
+	destination = string;
+	while (*source != '\0' && *source != '\n')
+		*destination++ = *source++;
+
+	*destination = '\0';
+}
+
+void remove_header_keyword(char *string)
 {								/** removes a RFC822 header keyword from the string.
 								    i.e. removes up to (and including) the first colon,
 								    plus any white-space immediately following it.  **/
