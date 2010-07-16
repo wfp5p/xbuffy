@@ -93,6 +93,11 @@ int CountIMAP();
 extern struct boxinfo *CurrentBox;
 #endif
 
+extern int real_from(char *buffer, BoxType_t type);
+extern int decode_rfc2047 (char *dst, char *str);
+extern void remove_header_keyword(char *string);
+extern void readBoxfile(char *boxFile);
+
 void ButtonDownHandler();
 void ButtonUpHandler();
 void BreakPopup();
@@ -191,11 +196,7 @@ void CheckBox(long i)
     int num = 0;
     Arg args[5];
     int nargs;
-    static struct boxinfo *tempNews = 0;
     struct boxinfo *currentBox;
-    int found;
-    static char *mailHeader = NULL;
-    int headerSize;
     Boolean beenTouched;
     Boolean isIcon = FALSE;
 
@@ -204,18 +205,18 @@ void CheckBox(long i)
    switch (currentBox->type)
    {
 
-
-#ifdef USE_NNTP
     case NNTPBOX:
+#ifdef USE_NNTP
         num = CountNNTP(currentBox, NULL, &beenTouched);
-        break;
-#endif                          /* NNTP */
-
-#ifdef HAVE_CCLIENT
-    case CCLIENTBOX:
-        num = CountIMAP(currentBox, NULL, &beenTouched);
-        break;
 #endif
+        break;
+
+    case CCLIENTBOX:
+#ifdef HAVE_CCLIENT
+        num = CountIMAP(currentBox, NULL, &beenTouched);
+#endif
+        break;
+
     case MAILBOX:
         num = CountUnixMail(currentBox, NULL, &beenTouched);
         break;
@@ -488,17 +489,19 @@ static void PopupHeader(Widget w, long i, XEvent *event, Boolean *cont)
 
      switch (currentBox->type)
      {
-
-#ifdef USE_NNTP
+      case NOBOX:break;
       case NNTPBOX:
-	 number = CountNNTP(currentBox, mailHeaders, &beenTouched);break;
+#ifdef USE_NNTP
+	 number = CountNNTP(currentBox, mailHeaders, &beenTouched);
 #endif
+	 break;
 
-#ifdef HAVE_CCLIENT
+
     case CCLIENTBOX:
-      number = CountIMAP(currentBox, mailHeaders, &beenTouched);break;
+#ifdef HAVE_CCLIENT
+      number = CountIMAP(currentBox, mailHeaders, &beenTouched);
 #endif
-
+      break;
 
     case MAILBOX:
         number = CountUnixMail(currentBox, &mailHeaders, &beenTouched);break;
@@ -809,7 +812,6 @@ void initBox(char *box, BoxType_t BoxType, int pollTime, int headerTime,
 
     struct boxinfo *tempBox;
     int boxSize;
-    char *ptr;
 
     tempBox = malloc(sizeof(*tempBox));
     memset(tempBox, 0, sizeof(*tempBox));
@@ -1123,7 +1125,6 @@ int main(argc, argv)
     int nargs;
     int pid;
     int ret;
-    const struct HXdeque_node *node;
 
 #ifdef DEBUG
    char pause_string[10];
@@ -1435,5 +1436,8 @@ if (!data.nofork)
 }
 else
     XtAppMainLoop(app);
+
+return 0;
+
 
 }
