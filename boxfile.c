@@ -26,6 +26,10 @@
 #define checkAndFree(x) {if (x!=NULL) {free(x);x=NULL;}}
 
 extern ApplicationData_t data;
+extern void initBox(char *box, BoxType_t BoxType, int pollTime, int headerTime,
+	     BoxNameType_t BoxNameType, char *command, char *audioCmd,
+	     char *title, Boolean origMode, Boolean nobeep,
+	     char *bgName, char *fgName, int countperiod, Boolean keepopen);
 
 static char *tokens[23] = {
 	"box", "title", "command", "audio", "mailbox", "newsbox", "origmode",
