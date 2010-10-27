@@ -1,12 +1,12 @@
 Summary:  X-based multiple mailbox biff
 Name: xbuffy
 Version: 3.6
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: X Consortium
 Group: X11/Utilities
 Source: xbuffy-3.6.tar.gz
 BuildRequires: libHX-devel >= 3.4
-BuildRequires: autoconf automake
+BuildRequires: autoconf automake libX11-devel libXt-devel libXaw-devel
 Requires: libHX >= 3.4
 Buildroot: %{_tmppath}/%{name}-root
 
