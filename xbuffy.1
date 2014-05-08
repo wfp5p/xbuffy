@@ -1,40 +1,39 @@
 .TH XBUFFY 1 08/20/99
-.uc 4.2
 .SH NAME
 xbuffy \- yet another biff for the X Window System
 .SH SYNOPSIS
-.B xbuffy  
+.B xbuffy
 [X toolkit options] [-help] [-version] [-horiz]
-[-poll \fIseconds\fR]  [-header \fIseconds\fR] 
+[-poll \fIseconds\fR]  [-header \fIseconds\fR]
 [-acmd \fIsound file\fR]  [-nofork] [-nobeep] [-names] [-orig]
 [-priority \fIpriority\fR]
-[-command \fIcommand\fR] [-shortnames] 
-[-mail <mailbox files...>] 
+[-command \fIcommand\fR] [-shortnames]
+[-mail <mailbox files...>]
 [-news <newsgroup names...>]
 
 .SH DESCRIPTION
 
 Xbuffy keeps track of multiple mailboxes.  You can
 either specify mailbox files on the command line, in a
-Xresources file, in a text configuration file, or set your 
-MAILPATH environment variable (a colon separated list of 
-files).  It will display the number of new messages in each 
+Xresources file, in a text configuration file, or set your
+MAILPATH environment variable (a colon separated list of
+files).  It will display the number of new messages in each
 mail file in a box.  You can clear the reverse video in a box
 by clicking on the box with Button 3.
 
 Another key feature of xbuffy is that it will use NNTP
 to watch newsgroups in the same way it watches mailboxes.
-You can also specify newsgroups on the command line, in 
-Xresources, in a text configuration file (the same file 
-can specify both mailboxes and newsboxes), or set your 
-NEWSPATH environment variable using the same format as 
+You can also specify newsgroups on the command line, in
+Xresources, in a text configuration file (the same file
+can specify both mailboxes and newsboxes), or set your
+NEWSPATH environment variable using the same format as
 the MAILPATH environment variable.
 
 By specifying certain command line options and/or
-Xresources, xbuffy can show the From and Subject lines in 
-each box.  It can also invoke shell commands on button 
-clicks.  Each box can be configured differently by using 
-a \fIboxfile.\fR  In general, it is a very extensible biff.  
+Xresources, xbuffy can show the From and Subject lines in
+each box.  It can also invoke shell commands on button
+clicks.  Each box can be configured differently by using
+a \fIboxfile.\fR  In general, it is a very extensible biff.
 Read on for details on what it can do.
 
 .SH OPTIONS
@@ -76,7 +75,7 @@ be used to automatically open a mail reader when new mail arrives.
 This will line up the boxes horizontally (default: vertical)
 .TP
 .B -nobeep
-This will disable the beep (or sound command) when new 
+This will disable the beep (or sound command) when new
 mail arrives.
 .TP
 .B -nofork
@@ -88,32 +87,32 @@ boxfile is an alternative way of specifying what to watch.  The boxfile also
 allows each box to have different polltime, headertime, etc.
 .TP
 .B -origMode
-This will show all messages in each mailbox.  It has no effect on 
+This will show all messages in each mailbox.  It has no effect on
 news groups.
 .TP
 .B -names
-Will display the full pathname of all the mailboxes 
+Will display the full pathname of all the mailboxes
 it is watching.
 .TP
 .B -shortnames
-Will display the file names of all the mailboxes 
+Will display the file names of all the mailboxes
 it is watching.
 .TP
 .B -priority \fIpriority\fR
 Nice level at which xbuffy and its child processes will run.
 .TP
 .B -command \fIcommand\fR
-This is the default command that is to be executed when Button 2 is pressed 
+This is the default command that is to be executed when Button 2 is pressed
 on a box.
 .TP
 .B X Options
 Standard X windows options (e.g. -fn, -display, etc.)
 .SH ENVIRONMENT
-The names and purpose of the some of the following environment 
+The names and purpose of the some of the following environment
 variables were borrowed from Bash, the GNU Shell.
 .TP 5
 .B MAILCHECK
-This specifies the amount of seconds to wait in between 
+This specifies the amount of seconds to wait in between
 polling for mail.
 .TP
 .B MAILPATH
@@ -132,34 +131,34 @@ database, allowing for one-time configuration and eliminating
 long command lines.  The environment variables described
 above take precedence over any X resources that are
 specified.  Also, any command line arguments take precedence
-over both X resources and environment variables. 
+over both X resources and environment variables.
 
 .SH BOXFILE FORMAT
 The boxfile contains configuration information for each box.  Any line
 that begins with '#' is considered a comment and is ignored.  The
-definition of a box begins with the keyword \fIbox\fR followed by 
-the filename or newsgroup for that box.  All subsequent lines are then 
+definition of a box begins with the keyword \fIbox\fR followed by
+the filename or newsgroup for that box.  All subsequent lines are then
 used to configure that box until either another \fIbox\fR command or
 the end of file.  Note that these options are NOT case sensitive.
 
 The following are settable on a per box basis by using
 the \fIboxfile\fR option (note that the boxfile may also be set in
-the Xresources with the resource Xbuffy.boxfile: <filename>).  
+the Xresources with the resource Xbuffy.boxfile: <filename>).
 
 When using a \fIboxfile\fR, only the \fIbox\fR line is required.  All options
-that are not given in the boxfile will default to the command line 
+that are not given in the boxfile will default to the command line
 (or built in) value.
 .TP 10
-.B box \fIfile name\fR 
+.B box \fIfile name\fR
 The filename or newsgroup for this box.  This also marks the beginning of
 a box definition.
 .TP
 .B title \fIbox title\fR
-The title that you want for this box.  This will override the shortname or 
+The title that you want for this box.  This will override the shortname or
 longname option.
 .TP
-.B mailbox 
-Specify that the box is a mailbox (a file).  If neither mailbox or 
+.B mailbox
+Specify that the box is a mailbox (a file).  If neither mailbox or
 newsbox is specified, mailbox is the default.
 .TP
 .B newsbox
@@ -180,39 +179,39 @@ to a cclient box and only really matters if you have a headertime of
 0.  A full count of the mailbox will be performed every \fIperiod\fR
 polls of the box.
 .TP
-.B origMode 
+.B origMode
 origMode will make Xbuffy try to act like Xmultibiff and count ALL messages
-instead of just NEW message.  
+instead of just NEW message.
 .TP
-.B newMode 
+.B newMode
 newMode will make Xbuffy count only new messages (this is the default).
 .TP
 .B nobeep
-This will disable the beep (or sound command) when new 
+This will disable the beep (or sound command) when new
 mail arrives
-in the specified mailbox to be counted.  
+in the specified mailbox to be counted.
 .TP
 .B beep
-This will enable the beep (or sound) when new 
+This will enable the beep (or sound) when new
 mail arrives
-in the specified mailbox to be counted.  
+in the specified mailbox to be counted.
 .TP
 .B shortname
 This will cause the specified box to be prefaced with the filename.
 .TP
 .B longname
-This will cause the specified box to 
+This will cause the specified box to
 be prefaced with a full path name.
 .TP
 .B audio \fIcommand string\fR
 Set to the command string to be used automatically when
-new mail arrives.  
+new mail arrives.
 .TP
 .B polltime \fIsecs\fR
 Set to the time (in seconds) in between polling the box.
 .TP
 .B headertime \fIsecs\fR
-Set to the time (in seconds) to display the header when new 
+Set to the time (in seconds) to display the header when new
 things arrive.
 .TP
 .B command  \fIcommand string\fR
@@ -249,7 +248,7 @@ The file name you give after the box option determines what type of
 driver cclient will use to read the mailbox.  In the simplest case of
 just giving a filename (like Xbuffy normally uses) c-client will
 attempt to figure out what format the mailbox uses.  There are a few
-special names and prefixes for certain box types. 
+special names and prefixes for certain box types.
 .TP
 .B #mhinbox
 The name #mhinbox refers to the directory inbox in the MH path.
@@ -263,7 +262,7 @@ Names which start with { are remote names and are in the form
  { remote_system_name [:port] [flags] } [mailbox_name]
 .fi
 where:
-.B remote_system_name 
+.B remote_system_name
 Internet domain name or bracketed IP address of server.
 .TP
 .B port
@@ -271,7 +270,7 @@ optional TCP port number, default is the default port for that service
 .B flags
 optional flags, one of the following (not all of these may work with
 Xbuffy):
-.B /service=service 
+.B /service=service
 mailbox access service, default is "imap"
 .TP
 .B /user=user
@@ -283,12 +282,12 @@ remote access as anonymous user
 .B /debug
 record protocol telemetry in application's debug log
 .TP
-.B /secure 
+.B /secure
 do not transmit a plaintext password over the network
 .TP
 .B mailbox_name
 remote mailbox name, default is INBOX
-   
+
 .SH EXAMPLES
 
 The following examples demonstrate how to configure xbuffy to do the
@@ -326,13 +325,13 @@ Here's a boxfile example for watching a few boxes using IMAP:
        title INBOX
        cclient
        polltime 180
-       
+
        # user fred's box named foo
        box {imap.example.com/user=fred}foo
        title foo
        cclient
        polltime 180
-.fi       
+.fi
 
 .SH GRATITUDE
 Thanks to John Reardon for writing the original Xmultibiff and Xmultibiff
@@ -344,7 +343,7 @@ to use with the c-client code.
 
 .SH BUGS
 
-There is a bug with the NNTP stuff that isn't really Buffy's fault.  Most 
+There is a bug with the NNTP stuff that isn't really Buffy's fault.  Most
 versions of the NNTP server will not dynamically update the high message
 number (you must disconnect from the server and re-connect to get a
 new high message).  If your server is running one of these versions of
@@ -354,5 +353,5 @@ NNTP then you will not get told of new articles in your newsboxes.
 
 xbuffy:	Bill Pemberton, wfp5p@virginia.EDU
 .TP
-xmultibiff: John Reardon, Midnight Networks Inc., 
+xmultibiff: John Reardon, Midnight Networks Inc.,
 	badger@midnight.com
