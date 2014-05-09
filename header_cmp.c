@@ -22,10 +22,7 @@
 #define whitespace(c)    (c == ' ' || c == '\t')
 
 
-char *header_cmp(header, prefix, suffix)
-char *header;
-char *prefix;
-char *suffix;
+char *header_cmp(char *header, char *prefix, char *suffix)
 {
 	int len;
 

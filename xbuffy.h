@@ -136,5 +136,5 @@ typedef struct ApplicationData_s ApplicationData_t;
 
 #define NEWstrlen(s) (s == NULL ? 0 : strlen(s))
 
-extern char *header_cmp();
+extern char *header_cmp(char *header, char *prefix, char *suffix);
 #endif /* _XBUFFY_H_ */
