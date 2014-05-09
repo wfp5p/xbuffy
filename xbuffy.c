@@ -74,19 +74,19 @@
 
 
 
-void CheckBox();
-void TimerBreakPopup();
+void CheckBox(long i);
+void TimerBreakPopup(int i);
 static int CountUnixMail(struct boxinfo *mailBox,
 		  hxmc_t **headerString,
 		  Boolean *beenTouched);
 
 void ParseMailPath();
-int makeBoxTitle();
+int makeBoxTitle(struct boxinfo *currentBox);
 void initBox(char *box, BoxType_t BoxType, int pollTime, int headerTime,
 	     BoxNameType_t BoxNameType, char *command, char *audioCmd,
 	     char *title, Boolean origMode, Boolean nobeep,
 	     char *bgName, char *fgName, int countperiod, Boolean keepopen);
-Pixel convertColor();
+Pixel convertColor(char *colorname, Pixel defValue);
 
 #ifdef HAVE_CCLIENT
 int CountIMAP();
@@ -98,11 +98,11 @@ extern int decode_rfc2047 (char *dst, char *str);
 extern void remove_header_keyword(char *string);
 extern void readBoxfile(char *boxFile);
 
-void ButtonDownHandler();
-void ButtonUpHandler();
+void ButtonDownHandler(Widget w, int *i, XEvent *event, Boolean *cont);
+void ButtonUpHandler(Widget w, int *i, XEvent *event, Boolean *cont);
 void BreakPopup(Widget w, int i, XEvent *event, Boolean *cont);
-void ExecuteCommand();
-void setBoxColor();
+void ExecuteCommand(Widget w, long i, XEvent *event, Boolean *cont);
+void setBoxColor(struct boxinfo *box, int status);
 static void PopupHeader(Widget w, long i, XEvent *event, Boolean *cont);
 void UpdateBoxNumber(struct boxinfo *box);
 
@@ -264,9 +264,7 @@ void CheckBox(long i)
 }
 
 
-void setBoxColor(box,status)
-   struct boxinfo *box;
-   int status;
+void setBoxColor(struct boxinfo *box, int status)
 {
    Arg args[5];
    int nargs;
@@ -412,11 +410,7 @@ static void dimension_text(char *hdrPtr, int *rows, int *cols)
 #endif
 
 /* event handlers that decides what to do with button clicks */
-void ButtonDownHandler(w, i, event, cont)
-    Widget w;
-    int *i;
-    XEvent *event;
-    Boolean *cont;
+void ButtonDownHandler(Widget w, int *i, XEvent *event, Boolean *cont)
 {
     if (event->xbutton.button == 1)
     {
@@ -426,12 +420,7 @@ void ButtonDownHandler(w, i, event, cont)
 }
 
 
-
-void ButtonUpHandler(w, i, event, cont)
-    Widget w;
-    int *i;
-    XEvent *event;
-    Boolean *cont;
+void ButtonUpHandler(Widget w, int *i, XEvent *event, Boolean *cont)
 {
     if (event->xbutton.button == 1)
     {
@@ -602,12 +591,11 @@ static void PopupHeader(Widget w, long i, XEvent *event, Boolean *cont)
     if (event == 0)
     {
         timerID = XtAppAddTimeOut(app, (currentBox->headerTime * 1000),
-                                  TimerBreakPopup, (XtPointer) i);
+                                  (XtTimerCallbackProc) TimerBreakPopup, (XtPointer) i);
     }
 }
 
-void TimerBreakPopup(i)
-    int i;
+void TimerBreakPopup(int i)
 {
     BreakPopup(0, i, 0, 0);
 }
@@ -624,11 +612,7 @@ void BreakPopup(Widget w, int i, XEvent *event, Boolean *cont)
 }
 
 
-void ExecuteCommand(w, i, event, cont)
-    Widget w;
-    long i;
-    XEvent *event;
-    Boolean *cont;
+void ExecuteCommand(Widget w, long i, XEvent *event, Boolean *cont)
 {
     struct boxinfo *currentBox;
 
@@ -781,9 +765,7 @@ static int CountUnixMail(struct boxinfo *mailBox,
 }
 
 
-Pixel convertColor(colorname, defValue)
-    char *colorname;
-    Pixel defValue;
+Pixel convertColor(char *colorname, Pixel defValue)
 {
    XrmValue namein, pixelout;
 
@@ -1009,8 +991,7 @@ void LoadIcon(w)
 }
 
 
-int makeBoxTitle(currentBox)
-    struct boxinfo *currentBox;
+int makeBoxTitle(struct boxinfo *currentBox)
 {
     char line[MAX_STRING];
 
