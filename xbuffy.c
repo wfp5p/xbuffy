@@ -100,11 +100,11 @@ extern void readBoxfile(char *boxFile);
 
 void ButtonDownHandler();
 void ButtonUpHandler();
-void BreakPopup();
+void BreakPopup(Widget w, int i, XEvent *event, Boolean *cont);
 void ExecuteCommand();
 void setBoxColor();
 static void PopupHeader(Widget w, long i, XEvent *event, Boolean *cont);
-void UpdateBoxNumber();
+void UpdateBoxNumber(struct boxinfo *box);
 
 
 
@@ -293,8 +293,7 @@ void setBoxColor(box,status)
 
 
 
-void UpdateBoxNumber(box)
-    struct boxinfo *box;
+void UpdateBoxNumber(struct boxinfo *box)
 {
     char amt[MAX_STRING];
     char fmtString[MAX_STRING];
@@ -548,7 +547,7 @@ static void PopupHeader(Widget w, long i, XEvent *event, Boolean *cont)
 
     tmpCommand = XtCreateManagedWidget("popup", commandWidgetClass, header[i], args, nargs);
 
-    XtAddCallback(tmpCommand, XtNcallback, BreakPopup, (XtPointer) i);
+    XtAddCallback(tmpCommand, XtNcallback, (XtCallbackProc) BreakPopup, (XtPointer) i);
 #else
     dimension_text((char *) hdrPtr, &rows, &cols);
     XtSetArg(args[nargs], XmNvalue, hdrPtr);
@@ -563,7 +562,7 @@ static void PopupHeader(Widget w, long i, XEvent *event, Boolean *cont)
     nargs++;
     tmpCommand = XmCreateText(header[i], "popup", args, nargs);
     XtManageChild(tmpCommand);
-    XtAddCallback(tmpCommand, XmNactivateCallback, BreakPopup, (XtPointer) i);
+    XtAddCallback(tmpCommand, XmNactivateCallback, (XtCallbackProc) BreakPopup, (XtPointer) i);
 #endif
 
     if (!XtIsRealized(header[i]))
@@ -613,11 +612,7 @@ void TimerBreakPopup(i)
     BreakPopup(0, i, 0, 0);
 }
 
-void BreakPopup(w, i, event, cont)
-    Widget w;
-    int i;
-    XEvent *event;
-    Boolean *cont;
+void BreakPopup(Widget w, int i, XEvent *event, Boolean *cont)
 {
     if (headerUp[i] != TRUE)
     {
