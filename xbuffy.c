@@ -67,12 +67,6 @@
 
 #include "xbuffy.xbm"
 
-#ifdef WFP_DEBUG
-#include "/home/wfp5p/bin/debug_include/malloc.h"
-#endif
-
-
-
 
 void CheckBox(long i);
 void TimerBreakPopup(int i);

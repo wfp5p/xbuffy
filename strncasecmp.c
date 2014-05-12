@@ -13,13 +13,6 @@
 
 #include <ctype.h>
 
-#ifdef WFP_DEBUG
-#include <stdio.h>
-#include <stdlib.h>
-#include "/home/wfp5p/bin/debug_include/malloc.h"
-#endif
-
-
 int strncasecmp(s1, s2, n)
 	register char *s1, *s2;
 	register int n;

@@ -10,11 +10,6 @@
 #include <ctype.h>
 #include "xbuffy.h"
 
-#ifdef WFP_DEBUG
-#include "/home/wfp5p/bin/debug_include/malloc.h"
-#endif
-
-
 #ifndef TRUE
 #define TRUE 1
 #endif
