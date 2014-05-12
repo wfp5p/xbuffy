@@ -13,8 +13,6 @@ config.h
 config.h.in
 config.log
 config.status
-libdyn/.deps/
-libdyn/Makefile
 stamp-h1
 depcomp
 install-sh
