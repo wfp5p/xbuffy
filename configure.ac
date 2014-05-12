@@ -1,12 +1,12 @@
 dnl| configure.in
 
-AC_INIT(xbuffy.c)
+AC_INIT([xbuffy], [3.6])
 AC_CONFIG_HEADERS(config.h)
 AH_TEMPLATE([HAVE_CCLIENT], [Define if the c-client lib is available])
 AH_TEMPLATE([USE_CONTENT_LENGTH], [Define if the Content-Length header is to be trusted])
 AH_TEMPLATE([USE_NNTP], [Define if the nntp support is desired])
 
-AM_INIT_AUTOMAKE(xbuffy, 3.5)
+AM_INIT_AUTOMAKE
 
 if test -z "$CFLAGS" ; then
 dnl| Prevent the next macro from setting CFLAGS to -g
