@@ -1,4 +1,4 @@
-dnl| configure.in
+dnl| configure.ac
 
 AC_INIT([xbuffy], [3.6])
 AC_CONFIG_HEADERS(config.h)
@@ -20,6 +20,8 @@ AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 
 AC_CHECK_LIB(HX, HX_init, [true], AC_MSG_ERROR(cound not find libHX))
+DM_CHECK_GMIME
+
 
 AC_HEADER_STDC
 AC_HEADER_TIME

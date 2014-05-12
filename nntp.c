@@ -171,7 +171,7 @@ int getHeaders(long Article, char **from, char **subject)
 			*from = strdup(line);
 
 		if (strncasecmp(line, "Subject:", 8) == 0)
-	     	   decode_rfc2047(*subject, line);
+			*subject = g_mime_utils_header_decode_text(line);
 
 	}
 

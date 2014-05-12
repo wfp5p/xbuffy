@@ -41,6 +41,7 @@
 #include <libHX/defs.h>
 #include <libHX/init.h>
 #include <libHX/string.h>
+#include <gmime/gmime.h>
 #include "xbuffy.h"
 #ifndef MOTIF
 #include <X11/Intrinsic.h>
@@ -88,7 +89,6 @@ extern struct boxinfo *CurrentBox;
 #endif
 
 extern int real_from(char *buffer, BoxType_t type);
-extern int decode_rfc2047 (char *dst, char *str);
 extern void remove_header_keyword(char *string);
 extern void readBoxfile(char *boxFile);
 
@@ -645,7 +645,8 @@ static int CountUnixMail(struct boxinfo *mailBox,
 {
     FILE *fp = 0;
     char buffer[MAX_STRING];
-    char From[MAX_STRING], Subject[MAX_STRING];
+    char *From;
+    char *Subject;
     register int count = 0;
     int status = UNKNOWN;
     register Boolean in_header = FALSE;
@@ -676,9 +677,6 @@ static int CountUnixMail(struct boxinfo *mailBox,
         return 0;
     }
 
-    From[0] = Subject[0] = '\0';
-
-
     while (fgets(buffer, MAX_STRING - 2, fp) != 0)
     {
        long CL = 0L;
@@ -701,12 +699,7 @@ static int CountUnixMail(struct boxinfo *mailBox,
         else if (in_header)
         {
             if (header_cmp(buffer, "From", NULL))
-            {
-                if (!decode_rfc2047(From, buffer))
-		    strcpy(From, buffer);
-
-            }
-
+		    From = g_mime_utils_header_decode_text(buffer);
 
 	   if (header_cmp(buffer, "Content-Length", NULL))
 	   {
@@ -715,10 +708,7 @@ static int CountUnixMail(struct boxinfo *mailBox,
 	   }
 
             if (header_cmp(buffer, "Subject", NULL))
-            {
-                if (!decode_rfc2047(Subject, buffer))
-		    strcpy(Subject, buffer);
-            }
+		    Subject = g_mime_utils_header_decode_text(buffer);
 
             if (header_cmp(buffer, "Status", NULL))
             {
@@ -747,8 +737,8 @@ static int CountUnixMail(struct boxinfo *mailBox,
 				HXmc_strcat(headerString, Subject);
                     }
                 }
-                From[0] = Subject[0] = '\0';
-
+                free(From);
+		free(Subject);
             }
 
         }
@@ -1119,6 +1109,9 @@ int main(argc, argv)
     mailArgs = TRUE;
 
     boxmap = HXdeque_init();
+
+    /* init gmime lib */
+    g_mime_init(0);
 
     nargs = 0;
     XtSetArg(args[nargs], XtNallowShellResize, TRUE);
