@@ -620,8 +620,7 @@ void ExecuteCommand(Widget w, long i, XEvent *event, Boolean *cont)
 }
 
 
-int isLocked(mbox)
-    char *mbox;
+int isLocked(char *mbox)
 {
 
 /* right now this is a REAL stupid function, it just looks for a .lock file */
@@ -883,7 +882,7 @@ void initBox(char *box, BoxType_t BoxType, int pollTime, int headerTime,
     nBoxes++;
 }
 
-void ParseMailPath()
+void ParseMailPath(void)
 {
     char *mailPath = 0;
     char *boxes = 0;
@@ -950,8 +949,7 @@ void ParseNewsPath()
 
 
 /* the the icon if it is not already loaded */
-void LoadIcon(w)
-    Widget w;
+void LoadIcon(Widget w)
 {
     Display *display = XtDisplay(w);
     int screen;
@@ -1026,7 +1024,7 @@ int makeBoxTitle(struct boxinfo *currentBox)
 }
 
 
-void Usage()
+void Usage(void)
 {
     printf("Usage: %s [toolkit options] [options] <file> ...\n\n", programName);
     printf("Options are:\n");
@@ -1061,10 +1059,7 @@ void Usage()
 }
 
 
-int main(argc, argv)
-    int argc;
-    char *argv[];
-
+int main(int argc, char **argv)
 {
 #ifdef MOTIF
     static String fallback_resources[] = {
