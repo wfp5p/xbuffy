@@ -156,7 +156,7 @@ XtResource resources[] = {
     XtOffset(ApplicationData_t *, fg), XtRString, XtDefaultForeground},
     {XtNbackground, XtCBackground, XtRPixel, sizeof(Pixel),
     XtOffset(ApplicationData_t *, bg), XtRString, XtDefaultBackground},
-#ifdef USE_NNTP
+#if 0
     {"newsboxes", "Newsboxes", XtRString, sizeof(String),
     XtOffset(ApplicationData_t *, newsBoxes), XtRString, 0},
 #endif                          /* NNTP */
@@ -200,7 +200,7 @@ void CheckBox(long i)
    {
 
     case NNTPBOX:
-#ifdef USE_NNTP
+#if 0
         num = CountNNTP(currentBox, NULL, &beenTouched);
 #endif
         break;
@@ -473,7 +473,7 @@ static void PopupHeader(Widget w, long i, XEvent *event, Boolean *cont)
      {
       case NOBOX:break;
       case NNTPBOX:
-#ifdef USE_NNTP
+#if 0
 	 number = CountNNTP(currentBox, mailHeaders, &beenTouched);
 #endif
 	 break;
@@ -912,7 +912,7 @@ void ParseMailPath(void)
     }
 }
 
-#ifdef USE_NNTP
+#if 0
 void ParseNewsPath()
 {
     char *newsPath = 0;

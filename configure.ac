@@ -4,7 +4,6 @@ AC_INIT([xbuffy], [3.6])
 AC_CONFIG_HEADERS(config.h)
 AH_TEMPLATE([HAVE_CCLIENT], [Define if the c-client lib is available])
 AH_TEMPLATE([USE_CONTENT_LENGTH], [Define if the Content-Length header is to be trusted])
-AH_TEMPLATE([USE_NNTP], [Define if the nntp support is desired])
 
 AM_INIT_AUTOMAKE
 
@@ -75,13 +74,6 @@ AC_ARG_WITH(cclient,
 esac],
 AC_MSG_RESULT(no)
 )
-
-AC_ARG_ENABLE(nntp,
-[  --enable-nntp[=HOST]    enable checking of NNTP boxes, set this to the
-                          name of the NNTP server to use],
-[ if test "$enableval" != no ; then
-     AC_DEFINE_UNQUOTED(USE_NNTP, "$enableval")
-fi])
 
 AC_ARG_ENABLE(content_length,
 [  --enable-content-length enable use of content-length headers],
